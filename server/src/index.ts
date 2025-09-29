@@ -1,7 +1,13 @@
 import 'dotenv/config';
 import app from './app';
+import dbConfig from './config/db.config';
 
 const PORT: number = Number(process.env.PORT) || 5000;
+
+dbConfig
+  .connection()
+  .then(() => console.log('✅ Db connected successfully'))
+  .catch(() => process.exit(1));
 
 app
   .listen(PORT, () => {
