@@ -1,5 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import session from 'express-session';
+import passport from 'passport';
+
 import router from './routes/app.routes';
 
 const app = express();
@@ -18,6 +20,8 @@ app.use(
     cookie: { secure: true },
   })
 );
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api/v1', router);
 
