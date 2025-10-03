@@ -1,3 +1,6 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 import User from '../schemas/auth.schema';
 import asyncHandler from '../utils/asyncHandler.util';
 import ApiError from '../utils/apiError.util';
@@ -11,7 +14,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   });
 
   if (findUser) {
-    throw new ApiError(401, 'User already registered');
+    throw new ApiError(403, 'User already registered');
   }
 
   const newUser = await User.create({
@@ -25,4 +28,37 @@ export const registerUser = asyncHandler(async (req, res, next) => {
   res.status(200).json(new ApiResponse(200, 'User registered successfully'));
 });
 
-export const loginUser = asyncHandler(async (req, res) => {});
+export const loginUser = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const findUser = await User.findOne({
+    email,
+  });
+
+  if (!findUser) {
+    throw new ApiError(403, 'User not found');
+  }
+
+  const isPasswordCorrect = await bcrypt.compare(password, findUser.password);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(403, 'Inavlid credentials');
+  }
+
+  if (!process.env.JWT_SECRET) {
+    throw new ApiError(500, 'Server error');
+  }
+
+  const token = jwt.sign({ id: findUser._id }, process.env.JWT_SECRET, {
+    expiresIn: '2d',
+  });
+
+  res
+    .status(200)
+    .cookie('token', token, { httpOnly: true })
+    .json(new ApiResponse(200, 'User logged in successfully'));
+});
+
+export const logoutUser = asyncHandler(async(req,res,next)=>{})
+
+export const handleGoogleAuthLogin = asyncHandler(async(req,res,next)=>{})

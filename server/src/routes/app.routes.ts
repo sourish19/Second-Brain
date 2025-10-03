@@ -1,8 +1,6 @@
 import { Router } from 'express';
-import passport from 'passport';
 
-import passportConfig from '../config/passport.config';
-import { registerUser, loginUser } from '../controllers/auth.controller';
+import { registerUser, loginUser, logoutUser,handleGoogleAuthLogin } from '../controllers/auth.controller';
 
 const router = Router();
 
@@ -10,9 +8,9 @@ router.route('/get').get((req, res) => {
   res.send('Hello');
 });
 
-router.route('/auth/register').post(registerUser);
-router
-  .route('/auth/login')
-  .post(passportConfig.authenticate('local'), loginUser);
+router.route('/users/register').post(registerUser);
+router.route('/users/login').post(loginUser);
+
+router.route('/users/google/callback').get(handleGoogleAuthLogin)
 
 export default router;

@@ -6,14 +6,23 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      min: [3, 'Name must be at least 3 characters long'],
+      max: 10,
     },
     email: {
+      unique: true,
       type: String,
       required: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
+      min: [8, 'Password must be at least 8 characters long'],
+      max: 20,
+    },
+    loginType: {
+      type: String,
     },
   },
   { timestamps: true }
