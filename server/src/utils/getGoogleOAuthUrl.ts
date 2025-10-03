@@ -12,10 +12,10 @@ const getGoogleOAuthUrl = () => {
       'https://www.googleapis.com/auth/userinfo.profile',
     ].join(' '),
   };
-  console.log(options)
+  console.log(options);
   const qs = new URLSearchParams(options);
-  console.log(qs)
+  console.log(qs);
   return `${rootUrl}?${qs.toString()}`;
 };
 
-export default getGoogleOAuthUrl
+export default getGoogleOAuthUrl;

@@ -10,6 +10,6 @@ app.use(urlencoded({ extended: true }));
 
 app.use('/api/v1', router);
 
-app.use(customErrorResponse)
+app.use(customErrorResponse);
 
 export default app;

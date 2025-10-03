@@ -1,24 +1,34 @@
-import { Request, Response,NextFunction } from "../types/express";
+import type { Request, Response, NextFunction } from 'express';
+import ApiError from '../utils/apiError.util';
 
+interface ApiErrorBody<T = any> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  error: T[];
+  data: unknown[];
+}
 
+const customErrorResponse = (
+  error: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Response => {
+  const err =
+    error instanceof ApiError
+      ? error
+      : new ApiError(500, 'Internal Server Error', [], []);
 
-const customErrorResponse = (err:unknown, req:Request, res:Response, next:NextFunction) => {
-    if(err instanceof Error){
-        return res.status(err.status).json({
-            error: [],
-            message: err.message || 'Internal Server Error',
-            statusCode: 500,
-            success: false,
-          });
-    }
+  const body: ApiErrorBody = {
+    statusCode: err.status,
+    success: err.success,
+    message: err.message,
+    error: err.error,
+    data: err.data,
+  };
 
-  // For other errors
-  res.status(500).json({
-    error: [],
-    message: err.message || 'Internal Server Error',
-    statusCode: 500,
-    success: false,
-  });
+  return res.status(err.status).json(body);
 };
 
 export default customErrorResponse;

@@ -59,6 +59,6 @@ export const loginUser = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, 'User logged in successfully'));
 });
 
-export const logoutUser = asyncHandler(async(req,res,next)=>{})
+export const logoutUser = asyncHandler(async (req, res, next) => {});
 
-export const handleGoogleAuthLogin = asyncHandler(async(req,res,next)=>{})
+export const handleGoogleAuthLogin = asyncHandler(async (req, res, next) => {});
