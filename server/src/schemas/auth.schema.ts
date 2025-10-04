@@ -1,5 +1,13 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  loginTypes?: string;
+  // isModified(path: string):boolean  Its already there in the Document
+}
 
 const userSchema = new mongoose.Schema(
   {
@@ -29,7 +37,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre('save', async function (next) {
-  const user = this;
+  const user: IUser = this;
   if (!user.isModified('password')) return next();
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -41,6 +49,6 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model<IUser>('user', userSchema);
 
 export default User;

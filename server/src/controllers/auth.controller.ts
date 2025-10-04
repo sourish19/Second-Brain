@@ -5,30 +5,29 @@ import User from '../schemas/auth.schema';
 import asyncHandler from '../utils/asyncHandler.util';
 import ApiError from '../utils/apiError.util';
 import ApiResponse from '../utils/apiResponse.util';
+import { cookieOptions } from '../utils/constants.util';
 
-export const registerUser = asyncHandler(
-  async (req, res) => {
-    const { name, email, password } = req.body;
-    
-    const findUser = await User.findOne({
-      email,
-    });
+export const registerUser = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
 
-    if (findUser) {
-      throw new ApiError(403, 'User already registered');
-    }
+  const findUser = await User.findOne({
+    email,
+  });
 
-    const newUser = await User.create({
-      name,
-      email,
-      password,
-    });
-
-    await newUser.save({ validateBeforeSave: true });
-
-    res.status(200).json(new ApiResponse(200, 'User registered successfully'));
+  if (findUser) {
+    throw new ApiError(403, 'User already registered');
   }
-);
+
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+  });
+
+  await newUser.save({ validateBeforeSave: true });
+
+  res.status(200).json(new ApiResponse(200, 'User registered successfully'));
+});
 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -57,14 +56,14 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .cookie('token', token, { httpOnly: true })
+    .cookie('token', token, cookieOptions)
     .json(new ApiResponse(200, 'User logged in successfully'));
 });
 
-export const logoutUser = asyncHandler(
-  async (req, res) => {}
-);
+export const logoutUser = asyncHandler(async (req, res) => {
+  res
+    .clearCookie('token', cookieOptions)
+    .json(new ApiResponse(200, 'Logout successfull'));
+});
 
-export const handleGoogleAuthLogin = asyncHandler(
-  async (req, res) => {}
-);
+export const handleGoogleAuthLogin = asyncHandler(async (req, res) => {});
