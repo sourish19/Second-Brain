@@ -12,9 +12,7 @@ const getGoogleOAuthUrl = () => {
       'https://www.googleapis.com/auth/userinfo.profile',
     ].join(' '),
   };
-  console.log(options);
-  const qs = new URLSearchParams(options);
-  console.log(qs);
+  const qs = new URLSearchParams(options).toString();
   return `${rootUrl}?${qs.toString()}`;
 };
 
