@@ -1,14 +1,9 @@
 import * as z from 'zod';
 
-export const userSchema = z.object({
-  name: z.string().min(3,"Name must be at least 3 characters").max(10, "Name must be at most 10 characters"),
-  email: z.email({message: 'Invalid email address'}).trim().toLowerCase(),
-});
-
-export const passwordSchema = z
+const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
-  .max(20,'Password must be at most 20 characters')
+  .max(20, 'Password must be at most 20 characters')
   .superRefine((val, ctx) => {
     if (!/[A-Z]/.test(val)) {
       ctx.addIssue({
@@ -37,5 +32,14 @@ export const passwordSchema = z
     }
   });
 
-  // export type registerUserSchema = z.infer<typeof registerUserSchema>
-  export type passwordSchema = z.infer<typeof passwordSchema>
+export const userSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Name must be at least 3 characters')
+    .max(10, 'Name must be at most 10 characters'),
+  email: z.email({ message: 'Invalid email address' }).trim().toLowerCase(),
+  password: passwordSchema,
+});
+
+// // export type registerUserSchema = z.infer<typeof registerUserSchema>
+// export type passwordSchema = z.infer<typeof passwordSchema>
