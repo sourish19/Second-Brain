@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const passwordSchema = z
+const passwordSchemaValidation = z
   .string()
   .min(8, 'Password must be at least 8 characters')
   .max(20, 'Password must be at most 20 characters')
@@ -32,13 +32,13 @@ const passwordSchema = z
     }
   });
 
-export const userSchema = z.object({
+export const userSchemaValidation = z.object({
   name: z
     .string()
     .min(3, 'Name must be at least 3 characters')
     .max(10, 'Name must be at most 10 characters'),
   email: z.email({ message: 'Invalid email address' }).trim().toLowerCase(),
-  password: passwordSchema,
+  password: passwordSchemaValidation,
 });
 
 // // export type registerUserSchema = z.infer<typeof registerUserSchema>

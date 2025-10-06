@@ -3,7 +3,12 @@ import jwt from 'jsonwebtoken';
 
 import User from '../schemas/auth.schema';
 import asyncHandler from '../utils/asyncHandler.util';
-import ApiError from '../utils/apiError.util';
+import {
+  ForbiddenError,
+  InternalServerError,
+  ConflictError,
+  NotFoundError,
+} from '../utils/apiError.util';
 import ApiResponse from '../utils/apiResponse.util';
 import { cookieOptions } from '../utils/constants.util';
 
@@ -15,7 +20,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (findUser) {
-    throw new ApiError(403, 'User already registered');
+    throw new ConflictError('User already exists');
   }
 
   const newUser = await User.create({
@@ -37,17 +42,17 @@ export const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!findUser) {
-    throw new ApiError(403, 'User not found');
+    throw new NotFoundError('User not found');
   }
 
   const isPasswordCorrect = await bcrypt.compare(password, findUser.password);
 
   if (!isPasswordCorrect) {
-    throw new ApiError(403, 'Inavlid credentials');
+    throw new ForbiddenError('Inavlid credentials');
   }
 
   if (!process.env.JWT_SECRET) {
-    throw new ApiError(500, 'Server error');
+    throw new InternalServerError('Server error');
   }
 
   const token = jwt.sign({ id: findUser._id }, process.env.JWT_SECRET, {

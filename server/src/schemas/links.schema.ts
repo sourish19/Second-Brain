@@ -1,8 +1,9 @@
 import mongoose, { Document, Types } from 'mongoose';
 
 interface ILinks extends Document {
-  hashedLink: string;
   userId: Types.ObjectId;
+  originalLink: string;
+  hashedLink: string;
 }
 // add indexing for {userid,hashedLink} one use - no duplicate link
 const linksSchema = new mongoose.Schema(
@@ -10,7 +11,11 @@ const linksSchema = new mongoose.Schema(
     userId: {
       type: Types.ObjectId,
       ref: 'User',
-      required:true
+      required: true,
+    },
+    originalLink: {
+      type: String,
+      reuired: true,
     },
     hashedLink: {
       type: String,

@@ -2,7 +2,7 @@ import { z, ZodError } from 'zod';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 
 import asyncHandler from '../utils/asyncHandler.util';
-import ApiError from '../utils/apiError.util';
+import { ValidationError } from '../utils/apiError.util';
 
 const ValidateData = (schema: z.ZodSchema): RequestHandler => {
   return asyncHandler(
@@ -10,8 +10,7 @@ const ValidateData = (schema: z.ZodSchema): RequestHandler => {
       const result = schema.safeParse(req.body);
       if (result.success) next();
       if (result.error instanceof ZodError)
-        throw new ApiError(
-          422,
+        throw new ValidationError(
           'Validation Error',
           [z.flattenError(result.error).fieldErrors],
           []

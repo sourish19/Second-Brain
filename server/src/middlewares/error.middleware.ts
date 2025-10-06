@@ -11,6 +11,7 @@ const errorHandler = (
     res.status(error.status).json({
       success: error.success,
       message: error.message,
+      code: error.code,
       error: error.error,
       data: error.data,
     });
@@ -19,6 +20,7 @@ const errorHandler = (
   res.status(500).json({
     success: false,
     message: error.message || 'Internal Server Error',
+    code: 'INTERNAL_SERVER_ERROR',
     error: [],
     data: [],
   });

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { InternalServerError } from '../utils/apiError.util';
 
 class DbConnect {
   dbUrl: string = process.env.DB_URI || '';
@@ -7,9 +8,11 @@ class DbConnect {
       await mongoose.connect(this.dbUrl);
     } catch (error: unknown) {
       if (error instanceof Error)
-        throw new Error(`Error in connecting Db: ${error.message}`);
+        throw new InternalServerError(
+          `Error in connecting Db: ${error.message}`
+        );
       else {
-        throw new Error('Error in connecting Db');
+        throw new InternalServerError('Error in connecting Db');
       }
       throw error;
     }

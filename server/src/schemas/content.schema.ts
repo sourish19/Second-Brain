@@ -4,7 +4,7 @@ interface IContent extends Document {
   userId: Types.ObjectId;
   title: string;
   type: string;
-  link: string;
+  link: Types.ObjectId;
   tags: Types.ObjectId[];
 }
 
@@ -26,7 +26,8 @@ const contentSchema = new mongoose.Schema(
       required: true,
     },
     link: {
-      type: String,
+      type: Types.ObjectId,
+      ref: 'Links',
       required: true,
     },
     tags: [{ type: Types.ObjectId, ref: 'Tags' }],
