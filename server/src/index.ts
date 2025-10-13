@@ -6,13 +6,15 @@ const PORT: number = Number(process.env.PORT) || 5000;
 
 dbConfig
   .connection()
-  .then(() => console.log('✅ Db connected successfully'))
-  .catch(() => process.exit(1));
+  .then(() => {
+    console.log('✅ Db connected successfully');
 
-app
-  .listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    app
+      .listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+      })
+      .on('error', (err) => {
+        console.error('Server failed to start', err);
+      });
   })
-  .on('error', (err) => {
-    console.error('Server failed to start', err);
-  });
+  .catch(() => process.exit(1));

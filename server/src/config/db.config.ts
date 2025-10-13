@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { InternalServerError } from '../utils/apiError.util';
 
 class DbConnect {
-  dbUrl: string = process.env.DB_URI || '';
+  dbUrl: string = process.env.DB_URI!;
   async connection() {
     try {
       await mongoose.connect(this.dbUrl);
