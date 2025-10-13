@@ -6,10 +6,17 @@ import {
   logoutUser,
   handleGoogleAuthLogin,
 } from '../controllers/auth.controller';
-import { addContent } from '../controllers/content.controller';
+import {
+  addContent,
+  getAllContents,
+  deleteContent,
+} from '../controllers/content.controller';
 import ValidateData from '../middlewares/validation.middleware';
 import { userSchemaValidation } from '../validations/auth.validation';
-import { contentSchemaValidation } from '../validations/content.validation';
+import {
+  contentSchemaValidation,
+  contentIdValidation,
+} from '../validations/content.validation';
 import isLoggedIn from '../middlewares/isLoggedIn.middleware';
 
 const router = Router();
@@ -32,5 +39,9 @@ router.route('/users/google/callback').get(handleGoogleAuthLogin);
 router
   .route('/add-content')
   .post(isLoggedIn, ValidateData(contentSchemaValidation), addContent);
+router.route('/get-contents').get(isLoggedIn, getAllContents);
+router
+  .route('/delete-content')
+  .delete(isLoggedIn, ValidateData(contentIdValidation), deleteContent);
 
 export default router;

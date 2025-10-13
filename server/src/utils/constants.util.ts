@@ -7,3 +7,13 @@ export const cookieOptions: CookieOptions = {
   path: '/',
   maxAge: 15 * 24 * 60 * 60 * 1000, // 15d
 };
+
+export enum CONTENT_TYPES {
+  ARTICLE = 'article',
+  TWEET = 'tweet',
+  YOUTUBE = 'youtube',
+  OTHER = 'other',
+}
+
+export const AVAILABLE_CONTENT_TYPES: CONTENT_TYPES[] =
+  Object.values(CONTENT_TYPES);

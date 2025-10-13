@@ -1,6 +1,11 @@
 import mongoose, { Document, Types } from 'mongoose';
+import {
+  AVAILABLE_CONTENT_TYPES,
+  CONTENT_TYPES,
+} from '../utils/constants.util';
+import { string } from 'zod';
 
-interface IContent extends Document {
+export interface IContent extends Document {
   userId: Types.ObjectId;
   title: string;
   type: string;
@@ -20,9 +25,9 @@ const contentSchema = new mongoose.Schema(
       required: true,
     },
     type: {
-      type: String,
-      enum: ['document', 'tweet', 'youtube', 'link'],
-      default: 'link',
+      type: string,
+      enum: AVAILABLE_CONTENT_TYPES,
+      default: CONTENT_TYPES.OTHER,
       required: true,
     },
     link: {

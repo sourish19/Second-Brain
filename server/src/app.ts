@@ -1,4 +1,5 @@
 import express, { json, urlencoded } from 'express';
+import cookieParser from 'cookie-parser';
 
 import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
@@ -8,12 +9,13 @@ import limiter from './config/rateLimit.config';
 
 const app = express();
 
-app.use(corsConfig())
+app.use(corsConfig());
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.use(limiter)
+app.use(limiter);
 
 app.use('/api/v1', router);
 

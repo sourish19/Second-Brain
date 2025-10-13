@@ -15,7 +15,7 @@ const linksSchema = new mongoose.Schema(
     },
     originalLink: {
       type: String,
-      reuired: true,
+      required: true,
     },
     hashedLink: {
       type: String,
