@@ -10,6 +10,8 @@ import {
   addContent,
   getAllContents,
   deleteContent,
+  getSharedContents,
+  shareableLink,
 } from '../controllers/content.controller';
 import ValidateData from '../middlewares/validation.middleware';
 import { userSchemaValidation } from '../validations/auth.validation';
@@ -43,5 +45,7 @@ router.route('/get-contents').get(isLoggedIn, getAllContents);
 router
   .route('/delete-content')
   .delete(isLoggedIn, ValidateData(contentIdValidation), deleteContent);
+router.route('/share').post(isLoggedIn, shareableLink);
+router.route('/share/:contentToken').get(isLoggedIn, getSharedContents);
 
 export default router;

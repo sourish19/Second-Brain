@@ -2,9 +2,10 @@ import mongoose, { Document, Types } from 'mongoose';
 import { string } from 'zod';
 
 export interface IShare extends Document {
+  userId: Types.ObjectId;
   share: boolean;
   shareLink: string;
-  allSharedContent: { user: string; shareLink: string }[];
+  //   allSharedContent: { user: string; shareLink: string }[];
 }
 
 const shareSchema = new mongoose.Schema(
@@ -22,18 +23,18 @@ const shareSchema = new mongoose.Schema(
       type: string,
       required: true,
     },
-    allSharedContent: [
-      {
-        user: {
-          type: String,
-          required: true,
-        },
-        shareLink: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    // allSharedContent: [
+    //   {
+    //     user: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //     shareLink: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
   },
   { timestamps: true }
 );

@@ -6,11 +6,13 @@ import {
   NotFoundError,
   ConflictError,
   InternalServerError,
+  UnauthorizedError,
 } from '../utils/apiError.util';
 import ApiResponse from '../utils/apiResponse.util';
 import asyncHandler from '../utils/asyncHandler.util';
 import getPreview from '../utils/preview.util';
 import { generateHash, generateShareableLink } from '../utils/helper.util';
+import { IUser } from '../schemas/auth.schema';
 
 // This is only for sending data to the frontend
 export interface IPreviewLink {
@@ -27,7 +29,8 @@ export const getAllContents = asyncHandler(async (req, res) => {
 
   if (!findUser) throw new NotFoundError('User not found');
 
-  const contents = await Content.find({ userId: findUser._id });
+  // Get all contents
+  const contents = await Content.find({ userId: findUser._id }).lean();
 
   if (!contents || contents.length === 0)
     throw new NotFoundError('No Contents Available');
@@ -35,7 +38,7 @@ export const getAllContents = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, 'Contents found', contents));
 });
 
-// NEED TO ADD TAGS & TYPES LATER
+// TODO: NEED TO ADD TAGS & TYPES LATER
 export const addContent = asyncHandler(async (req, res) => {
   const { title, link, type, tags } = req.body as {
     title?: string;
@@ -44,12 +47,14 @@ export const addContent = asyncHandler(async (req, res) => {
     tags?: string[];
   };
 
-  const findUser = await User.findById(req.user?._id).select('-password');
+  const findUser = await User.findById(req.user?._id)
+    .select('-password')
+    .lean();
 
   if (!findUser) throw new NotFoundError('User not found');
 
   // Get hashed Link
-  const hashedLink = generateHash(link);
+  const hashedLink: string = generateHash(link);
 
   const existingContent = await Links.findOne({
     $and: [{ userId: findUser._id }, { hashedLink }],
@@ -79,8 +84,6 @@ export const addContent = asyncHandler(async (req, res) => {
 
   if (!newContent) throw new InternalServerError('Server error');
 
-  await newContent.save({ validateBeforeSave: true });
-
   // Build response data
   const responseData: IPreviewLink = {
     id: String(newContent._id),
@@ -98,17 +101,23 @@ export const addContent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, 'Content added successfully', [responseData]));
 });
 
+// TODO: CHECK SHARE ALSO IF NEEDED
 export const deleteContent = asyncHandler(async (req, res) => {
   const { contentId } = req.body;
 
-  const findUser = await User.findById(req.user?._id).select('-password');
+  // Find user
+  const findUser = await User.findById(req.user?._id)
+    .select('-password')
+    .lean();
 
   if (!findUser) throw new NotFoundError('User not found');
 
+  // Check if content exists & delete
   const doesContentExist = await Content.findByIdAndDelete(contentId);
 
   if (!doesContentExist) throw new NotFoundError('Content not found');
 
+  // Delete link
   const deleteLink = await Links.deleteOne({
     $and: [{ userId: findUser._id }, { _id: doesContentExist.link }],
   });
@@ -117,15 +126,19 @@ export const deleteContent = asyncHandler(async (req, res) => {
 });
 
 export const shareableLink = asyncHandler(async (req, res) => {
-  const findUser = await User.findById(req.user?._id).select('-password');
+  const findUser = await User.findById(req.user?._id)
+    .select('-password')
+    .lean();
 
   if (!findUser) throw new NotFoundError('User not found');
 
+  // Get all contents of the user
   const getUserContents = await Content.find({ userId: findUser._id });
 
   if (!getUserContents || getUserContents.length === 0)
     throw new NotFoundError('No Contents Available');
 
+  // Generate tokens for shareable link
   const { randomToken, hashedToken } = generateShareableLink();
 
   const updateShareContent = await Share.create({
@@ -136,8 +149,7 @@ export const shareableLink = asyncHandler(async (req, res) => {
 
   if (!updateShareContent) throw new InternalServerError('Server Error');
 
-  await updateShareContent.save({ validateBeforeSave: true });
-
+  // Create shareable link
   const createLink = `${process.env.BASE_URL}/api/v1/secondbrain/share/${randomToken}`;
 
   res
@@ -147,6 +159,38 @@ export const shareableLink = asyncHandler(async (req, res) => {
         { link: createLink },
       ])
     );
+});
+
+export const getSharedContents = asyncHandler(async (req, res) => {
+  const { contentToken } = req.params;
+
+  if (!contentToken) throw new UnauthorizedError();
+
+  const hashedToken = generateHash(contentToken);
+
+  // Check if share link is valid and also the shared user has share turned on if not then the link is not valid
+  const findShare = await Share.findOne({
+    $and: [{ share: true }, { shareLink: hashedToken }],
+  })
+    .populate<{ userId: IUser }>({ path: 'userId' })
+    .lean();
+
+  if (!findShare) throw new NotFoundError('Share not found');
+
+  // Find all contents of the shared user
+  const findContents = await Content.find({ userId: findShare?.userId }).lean();
+
+  if (!findContents || findContents.length === 0)
+    throw new NotFoundError('Contents not found');
+
+  res.status(200).json(
+    new ApiResponse(200, 'Contents found', [
+      {
+        name: findShare.userId?.name ?? 'Unknown',
+        contents: findContents,
+      },
+    ])
+  );
 });
 
 /*

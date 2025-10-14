@@ -5,7 +5,7 @@ const corsConfig = () => {
     origin: function (origin, callback) {
       const allowedOrigins =
         process.env.NODE_ENV === 'production'
-          ? ['https://example.com']
+          ? ['https://example.com'] // Need to change this
           : ['http://localhost:5173'];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
