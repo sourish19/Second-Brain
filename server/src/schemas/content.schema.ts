@@ -3,14 +3,15 @@ import {
   AVAILABLE_CONTENT_TYPES,
   CONTENT_TYPES,
 } from '../utils/constants.util';
-import { string } from 'zod';
 
 export interface IContent extends Document {
   userId: Types.ObjectId;
   title: string;
+  image: string;
   type: string;
   link: Types.ObjectId;
   tags: Types.ObjectId[];
+  shareLink: Boolean;
 }
 
 const contentSchema = new mongoose.Schema(
@@ -24,8 +25,12 @@ const contentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+      required: false,
+    },
     type: {
-      type: string,
+      type: String,
       enum: AVAILABLE_CONTENT_TYPES,
       default: CONTENT_TYPES.OTHER,
       required: true,

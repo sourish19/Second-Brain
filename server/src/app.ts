@@ -1,5 +1,6 @@
 import express, { json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
@@ -14,6 +15,7 @@ app.use(corsConfig());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
 
 app.use(limiter);
 
