@@ -20,6 +20,7 @@ import {
   contentIdValidation,
 } from '../validations/content.validation';
 import isLoggedIn from '../middlewares/isLoggedIn.middleware';
+import { authLimiter } from '../config/rateLimit.config';
 
 const router = Router();
 
@@ -30,10 +31,10 @@ router.route('/get').get((req, res) => {
 // Auth
 router
   .route('/users/register')
-  .post(ValidateData(userSchemaValidation), registerUser);
+  .post(authLimiter,ValidateData(userSchemaValidation), registerUser);
 router
   .route('/users/login')
-  .post(ValidateData(userSchemaValidation), loginUser);
+  .post(authLimiter,ValidateData(userSchemaValidation), loginUser);
 router.route('/users/logout').post(logoutUser);
 router.route('/users/google/callback').get(handleGoogleAuthLogin);
 

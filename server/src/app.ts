@@ -6,7 +6,7 @@ import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
 import { NotFoundError } from './utils/apiError.util';
 import corsConfig from './config/cors.config';
-import limiter from './config/rateLimit.config';
+import {globalLimiter} from './config/rateLimit.config';
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
-app.use(limiter);
+app.use(globalLimiter);
 
 app.use('/api/v1', router);
 

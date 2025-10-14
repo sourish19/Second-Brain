@@ -109,4 +109,15 @@ export class InternalServerError<E = unknown, D = unknown> extends ApiError<
   }
 }
 
+export class TooManyRequests<E = unknown, D = unknown> extends ApiError<E, D> {
+  constructor(
+    message = 'Too many requests',
+    error: E[] = [],
+    data: D[] = [],
+    stack?: string
+  ) {
+    super(429, message, error, data, 'TOO_MANY_REQUESTS', stack);
+  }
+}
+
 export default ApiError;
