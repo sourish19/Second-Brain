@@ -4,7 +4,7 @@ type THandler = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<Response>;
+) => Promise<unknown>;
 
 const asyncHandler =
   (requestHandler: THandler): RequestHandler =>

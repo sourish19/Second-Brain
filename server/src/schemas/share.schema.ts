@@ -1,10 +1,10 @@
 import mongoose, { Document, Types } from 'mongoose';
-import { string } from 'zod';
 
 export interface IShare extends Document {
   userId: Types.ObjectId;
   share: boolean;
   shareLink: string;
+  token: string;
 }
 
 const shareSchema = new mongoose.Schema(
@@ -19,7 +19,11 @@ const shareSchema = new mongoose.Schema(
       default: false,
     },
     shareLink: {
-      type: string,
+      type: String,
+      required: false,
+    },
+    token: {
+      type: String,
       required: true,
     },
   },

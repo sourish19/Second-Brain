@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 import app from './app';
 import dbConfig from './config/db.config';
 
@@ -17,4 +18,8 @@ dbConfig
         console.error('Server failed to start', err);
       });
   })
-  .catch(() => process.exit(1));
+  .catch((error) => {
+    process.env.NODE_ENV === 'production' &&
+      console.error('❌ Failed to connect to database:', error);
+    process.exit(1);
+  });

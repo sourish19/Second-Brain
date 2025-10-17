@@ -4,19 +4,20 @@ import User from '../schemas/auth.schema';
 import Content from '../schemas/content.schema';
 import Links from '../schemas/links.schema';
 import Share from '../schemas/share.schema';
+import { IUser } from '../schemas/auth.schema';
+import { ILinks } from '../schemas/links.schema';
+
 import {
   NotFoundError,
   ConflictError,
   InternalServerError,
   UnauthorizedError,
-  BadRequestError,
   ValidationError,
 } from '../utils/apiError.util';
 import ApiResponse from '../utils/apiResponse.util';
 import asyncHandler from '../utils/asyncHandler.util';
 import getPreview from '../utils/preview.util';
 import { generateHash, generateShareableLink } from '../utils/helper.util';
-import { IUser } from '../schemas/auth.schema';
 import { NO_IMAGE } from '../utils/constants.util';
 
 // This is only for sending data to the frontend
@@ -141,10 +142,9 @@ export const getAllContents = asyncHandler(async (req, res) => {
   if (!contents || contents.length === 0)
     throw new NotFoundError('No Contents Available');
 
- return  res.status(200).json(new ApiResponse(200, 'Contents found', contents));
+  return res.status(200).json(new ApiResponse(200, 'Contents found', contents));
 });
 
-// TODO: NEED TO ADD TAGS & TYPES LATER
 export const addContent = asyncHandler(async (req, res) => {
   const { title = null, link, type, tags } = req.body as TBody;
 
@@ -179,12 +179,11 @@ export const addContent = asyncHandler(async (req, res) => {
     3
   );
 
- return res
+  return res
     .status(201)
     .json(new ApiResponse(201, 'Content added successfully', responseData));
 });
 
-// TODO: CHECK SHARE ALSO IF NEEDED
 export const deleteContent = asyncHandler(async (req, res) => {
   const { contentId } = req.body;
 
@@ -221,7 +220,7 @@ export const shareableLink = asyncHandler(async (req, res) => {
   const findShare = await Share.findOne({
     userId: findUser._id,
     share: true,
-    shareLink: { $exists: true },
+    token: { $exists: true },
   }).lean();
 
   if (findShare) {
@@ -249,6 +248,7 @@ export const shareableLink = asyncHandler(async (req, res) => {
     userId: findUser._id,
     share: true,
     shareLink: createLink,
+    token,
   });
 
   if (!updateShareContent) throw new InternalServerError('Server Error');
@@ -265,11 +265,9 @@ export const getSharedContents = asyncHandler(async (req, res, next) => {
 
   if (!contentToken) throw new UnauthorizedError();
 
-  const hashedToken = generateHash(contentToken);
-
   // Check if share link is valid and also the shared user has share turned on if not then the link is not valid
   const findShare = await Share.findOne({
-    $and: [{ share: true }, { shareLink: hashedToken }],
+    $and: [{ share: true }, { token: contentToken }],
   })
     .populate<{ userId: IUser }>({ path: 'userId' })
     .lean();
@@ -277,15 +275,27 @@ export const getSharedContents = asyncHandler(async (req, res, next) => {
   if (!findShare) throw new NotFoundError('Share not found');
 
   // Find all contents of the shared user
-  const findContents = await Content.find({ userId: findShare?.userId }).lean();
+  const findContents = await Content.find({ userId: findShare?.userId })
+    .populate<{ link: ILinks }>({ path: 'link' })
+    .lean();
 
   if (!findContents || findContents.length === 0)
     throw new NotFoundError('Contents not found');
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Contents found', {
-      name: findShare.userId?.name ?? 'Unknown',
-      contents: findContents,
-    })
-  );
+  const sanatizedResponse = {
+    name: findShare.userId?.name ?? 'Unknown',
+    contents: findContents.map((content) => {
+      return {
+        title: content.title,
+        type: content.type,
+        link: content.link?.originalLink,
+        tags: content.tags,
+        image: content.image,
+      };
+    }),
+  };
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Contents found', sanatizedResponse));
 });

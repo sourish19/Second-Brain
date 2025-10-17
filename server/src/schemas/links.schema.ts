@@ -1,6 +1,6 @@
 import mongoose, { Document, Types } from 'mongoose';
 
-interface ILinks extends Document {
+export interface ILinks extends Document {
   userId: Types.ObjectId;
   originalLink: string;
   hashedLink: string;

@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 
+import User from '../schemas/auth.schema';
+
 import { UnauthorizedError } from '../utils/apiError.util';
 import asyncHandler from '../utils/asyncHandler.util';
-import User from '../schemas/auth.schema';
 
 const isLoggedIn = asyncHandler(async (req, res, next) => {
   const { token } = req.cookies as { token: string };

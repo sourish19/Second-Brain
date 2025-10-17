@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
 import { NotFoundError } from './utils/apiError.util';
+
 import corsConfig from './config/cors.config';
 import { globalLimiter } from './config/rateLimit.config';
 
