@@ -2,10 +2,12 @@ import * as z from 'zod';
 
 import { AVAILABLE_CONTENT_TYPES } from '../utils/constants.util';
 
-const titleSchemaValidation = z
-  .string()
-  .min(4, { message: 'Title must be at least 4 characters' })
-  .max(20, { message: 'Title must be at most 20 characters ' });
+const titleSchemaValidation = z.optional(
+  z
+    .string()
+    .min(4, { message: 'Title must be at least 4 characters' })
+    .max(20, { message: 'Title must be at most 20 characters ' })
+);
 
 const linkSchemaValidation = z.string({
   message: 'Link is required',

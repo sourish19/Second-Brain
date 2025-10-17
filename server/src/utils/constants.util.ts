@@ -17,3 +17,5 @@ export enum CONTENT_TYPES {
 
 export const AVAILABLE_CONTENT_TYPES: CONTENT_TYPES[] =
   Object.values(CONTENT_TYPES);
+
+export const NO_IMAGE = 'https://placehold.co/600x400';

@@ -1,5 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import qs from 'qs';
+import axios from 'axios';
 
 interface IPreviewLink {
   title: string;
@@ -23,9 +22,10 @@ const getPreview = async (
         },
       }
     );
-
+    // console.log(res.data);
     return res.data;
   } catch (error) {
+    // console.log(error);
     // Fail silently
     return null;
   }

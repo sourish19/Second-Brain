@@ -31,10 +31,10 @@ router.route('/get').get((req, res) => {
 // Auth
 router
   .route('/users/register')
-  .post(authLimiter,ValidateData(userSchemaValidation), registerUser);
+  .post(authLimiter, ValidateData(userSchemaValidation), registerUser);
 router
   .route('/users/login')
-  .post(authLimiter,ValidateData(userSchemaValidation), loginUser);
+  .post(authLimiter, ValidateData(userSchemaValidation), loginUser);
 router.route('/users/logout').post(logoutUser);
 router.route('/users/google/callback').get(handleGoogleAuthLogin);
 

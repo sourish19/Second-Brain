@@ -11,9 +11,9 @@ export const globalLimiter = rateLimit({
   legacyHeaders: false,
   handler: (req: Request, res: Response, next: NextFunction) => {
     // Create a custom error
-    const resetTime = req?.rateLimit?.resetTime; 
+    const resetTime = req?.rateLimit?.resetTime;
     const errorMessage = `You have exceeded the rate limit. Try again at ${resetTime?.toLocaleTimeString()}`;
-    
+
     next(new TooManyRequests(errorMessage));
   },
 });
@@ -27,10 +27,9 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   handler: (req: Request, res: Response, next: NextFunction) => {
     // Create a custom error
-    const resetTime = req?.rateLimit?.resetTime; 
+    const resetTime = req?.rateLimit?.resetTime;
     const errorMessage = `You have exceeded the rate limit. Try again at ${resetTime?.toLocaleTimeString()}`;
-    
+
     next(new TooManyRequests(errorMessage));
   },
 });
-
