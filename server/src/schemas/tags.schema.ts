@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 
-interface ITags extends Document {
+export interface ITags extends Document {
   tagTitle: string;
 }
 // Implement Indexing later
@@ -10,6 +10,8 @@ const tagsSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true,
+      lowercase: true,
     },
   },
   { timestamps: true }

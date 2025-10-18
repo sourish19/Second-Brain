@@ -4,8 +4,10 @@ import User from '../schemas/auth.schema';
 import Content from '../schemas/content.schema';
 import Links from '../schemas/links.schema';
 import Share from '../schemas/share.schema';
+import Tags from '../schemas/tags.schema';
 import { IUser } from '../schemas/auth.schema';
 import { ILinks } from '../schemas/links.schema';
+import { ITags } from '../schemas/tags.schema';
 
 import {
   NotFoundError,
@@ -40,7 +42,7 @@ type TBody = {
 type TExecuteSession = (
   title: string | null,
   type: string,
-  tags: string[] | undefined,
+  tagIds: unknown[],
   link: string,
   hashedLink: string,
   user: IUser,
@@ -52,7 +54,7 @@ type TExecuteSession = (
 const executeTransactions: TExecuteSession = async (
   title,
   type,
-  tags,
+  tagIds,
   link,
   hashedLink,
   user,
@@ -63,6 +65,7 @@ const executeTransactions: TExecuteSession = async (
     try {
       await session.startTransaction();
 
+      // Create link & save it in db with session
       const linkDoc = new Links({
         userId: user._id,
         originalLink: link,
@@ -72,13 +75,18 @@ const executeTransactions: TExecuteSession = async (
 
       const previewData = await getPreview(link);
 
+      const tagsDoc = await Tags.find({
+        _id: { $in: tagIds },
+      }).lean();
+
+      // Create content & save it in db with session
       const newContent = new Content({
         userId: user._id,
         title: title || previewData?.title || 'Title',
         image: previewData?.image || NO_IMAGE,
         type,
         link: linkDoc._id,
-        tags,
+        tags: tagsDoc.map((tag) => tag._id),
       });
       await newContent.save({ session });
 
@@ -90,9 +98,7 @@ const executeTransactions: TExecuteSession = async (
         type: newContent.type,
         link: linkDoc.originalLink,
         image: newContent.image || NO_IMAGE,
-        tags: Array.isArray(newContent.tags)
-          ? newContent.tags.map((t) => String(t))
-          : [],
+        tags: tagsDoc.map((tag) => tag.tagTitle),
       };
     } catch (error: unknown) {
       await session.abortTransaction();
@@ -123,6 +129,8 @@ const executeTransactions: TExecuteSession = async (
       }
 
       throw new InternalServerError('Unknown Transaction Error');
+    } finally {
+      session.endSession();
     }
   }
 
@@ -131,16 +139,72 @@ const executeTransactions: TExecuteSession = async (
   throw new InternalServerError('Transaction failed after retries');
 };
 
+// Store tags in DB
+const storeTagsInDB = async (tags: string[]): Promise<unknown[]> => {
+  try {
+    const existingTags = await Tags.find({ tagTitle: { $in: tags } }).lean();
+
+    // If all tags are already in DB return it
+    if (existingTags.length === tags.length) return tags;
+
+    // Make an array of tags title which are there in the dv
+    const existingTagTitles = new Set(existingTags.map((tag) => tag.tagTitle));
+
+    // Get the tags which are not there in the db
+    const newTag = tags.filter((tag) => !existingTagTitles.has(tag));
+
+    // Create new tag whic are not in the db
+    let createdTags;
+    if (newTag.length > 0) {
+      createdTags = await Tags.insertMany(
+        newTag.map((tag) => ({ tagTitle: tag })),
+        { ordered: false }
+      ); // ignore duplicate
+    }
+
+    let sendTags: unknown[] = [];
+    if (createdTags && createdTags?.length > 0) {
+      sendTags = [
+        ...existingTags.map((tag) => tag._id),
+        ...createdTags?.map((tag) => tag._id),
+      ];
+    }
+
+    return sendTags;
+  } catch (error) {
+    // Fail silently
+    if (error instanceof Error) {
+      process.env.NODE_ENV === 'development' &&
+        console.error(' Error in storeTagsInDB --> ', error);
+    }
+  }
+  return tags;
+};
+
 export const getAllContents = asyncHandler(async (req, res) => {
   const findUser = await User.findById(req.user?._id).select('-password');
 
   if (!findUser) throw new NotFoundError('User not found');
 
   // Get all contents
-  const contents = await Content.find({ userId: findUser._id }).lean();
+  const contents = await Content.find({ userId: findUser._id })
+    .populate<{ tags: ITags }>({ path: 'tags',select:'tagTitle' })
+    .populate<{ link: ILinks }>({ path: 'link',select:'originalLink' })
+    .lean();
 
   if (!contents || contents.length === 0)
     throw new NotFoundError('No Contents Available');
+
+  const sanitizedContents = contents.map((content) => {
+    return {
+      id: String(content._id),
+      title: content.title,
+      type: content.type,
+      link: content.link?.originalLink,
+      tags: content.tags.tagTitle,
+      image: content.image || NO_IMAGE,
+    };
+  });
 
   return res.status(200).json(new ApiResponse(200, 'Contents found', contents));
 });
@@ -165,13 +229,19 @@ export const addContent = asyncHandler(async (req, res) => {
 
   if (existingContent) throw new ConflictError('Content already exists');
 
+  // Store tags in DB
+  let saveTags: unknown[] = [];
+  if (tags && tags.length > 0) {
+    saveTags = await storeTagsInDB(tags);
+  }
+
   // Create Transaction Session
   const session = await mongoose.startSession();
 
   const responseData = await executeTransactions(
     title,
     type,
-    tags,
+    saveTags,
     link,
     hashedLink,
     findUser,
@@ -276,7 +346,8 @@ export const getSharedContents = asyncHandler(async (req, res, next) => {
 
   // Find all contents of the shared user
   const findContents = await Content.find({ userId: findShare?.userId })
-    .populate<{ link: ILinks }>({ path: 'link' })
+    .populate<{ link: ILinks }>({ path: 'link',select: 'originalLink' })
+    .populate<{ tags: ITags }>({ path: 'tags',select: 'tagTitle' })
     .lean();
 
   if (!findContents || findContents.length === 0)

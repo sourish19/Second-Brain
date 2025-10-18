@@ -27,8 +27,13 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   handler: (req: Request, res: Response, next: NextFunction) => {
     // Create a custom error
-    const resetTime = req?.rateLimit?.resetTime;
-    const errorMessage = `You have exceeded the rate limit. Try again at ${resetTime?.toLocaleTimeString()}`;
+    const resetTime = Number(req?.rateLimit?.resetTime);
+
+    const diffMs = resetTime - Number(new Date());
+
+    const diffMin = Math.ceil(diffMs / 60000);
+
+    const errorMessage = `You have exceeded the rate limit. Try again in ${diffMin} min`;
 
     next(new TooManyRequests(errorMessage));
   },
