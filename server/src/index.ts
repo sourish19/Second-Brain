@@ -3,7 +3,9 @@ import 'dotenv/config';
 import app from './app';
 import dbConfig from './config/db.config';
 
-const PORT: number = Number(process.env.PORT) || 5000;
+import ENV from './config/env.config';
+
+const PORT: number = +ENV.PORT || 5000;
 
 dbConfig
   .connection()
@@ -19,7 +21,7 @@ dbConfig
       });
   })
   .catch((error) => {
-    process.env.NODE_ENV === 'production' &&
+    ENV.NODE_ENV === 'production' &&
       console.error('❌ Failed to connect to database:', error);
     process.exit(1);
   });

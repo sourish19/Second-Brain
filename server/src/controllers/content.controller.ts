@@ -188,8 +188,8 @@ export const getAllContents = asyncHandler(async (req, res) => {
 
   // Get all contents
   const contents = await Content.find({ userId: findUser._id })
-    .populate<{ tags: ITags }>({ path: 'tags',select:'tagTitle' })
-    .populate<{ link: ILinks }>({ path: 'link',select:'originalLink' })
+    .populate<{ tags: ITags }>({ path: 'tags', select: 'tagTitle' })
+    .populate<{ link: ILinks }>({ path: 'link', select: 'originalLink' })
     .lean();
 
   if (!contents || contents.length === 0)
@@ -346,8 +346,8 @@ export const getSharedContents = asyncHandler(async (req, res, next) => {
 
   // Find all contents of the shared user
   const findContents = await Content.find({ userId: findShare?.userId })
-    .populate<{ link: ILinks }>({ path: 'link',select: 'originalLink' })
-    .populate<{ tags: ITags }>({ path: 'tags',select: 'tagTitle' })
+    .populate<{ link: ILinks }>({ path: 'link', select: 'originalLink' })
+    .populate<{ tags: ITags }>({ path: 'tags', select: 'tagTitle' })
     .lean();
 
   if (!findContents || findContents.length === 0)

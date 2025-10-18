@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import { InternalServerError } from '../utils/apiError.util';
 
+import ENV from './env.config';
+
 class DbConnect {
-  dbUrl: string = process.env.DB_URI!;
+  dbUrl: string = ENV.DB_URI;
   async connection() {
     try {
       await mongoose.connect(this.dbUrl);
@@ -14,7 +16,6 @@ class DbConnect {
       else {
         throw new InternalServerError('Error in connecting Db');
       }
-      throw error;
     }
   }
 }

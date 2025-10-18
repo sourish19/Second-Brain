@@ -7,6 +7,8 @@ interface IPreviewLink {
   url: string;
 }
 
+import ENV from '../config/env.config';
+
 const getPreview = async (
   originalLink: string
 ): Promise<IPreviewLink | null> => {
@@ -18,7 +20,7 @@ const getPreview = async (
       { q: originalLink },
       {
         headers: {
-          'X-Linkpreview-Api-Key': process.env.LINK_PREVIEW_API,
+          'X-Linkpreview-Api-Key': ENV.LINK_PREVIEW_API,
         },
       }
     );

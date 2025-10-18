@@ -1,10 +1,12 @@
 import cors from 'cors';
 
+import ENV from './env.config';
+
 const corsConfig = () => {
   return cors({
     origin: function (origin, callback) {
       const allowedOrigins =
-        process.env.NODE_ENV === 'production'
+        ENV.NODE_ENV === 'production'
           ? ['https://example.com'] // Need to change this
           : ['http://localhost:5173'];
       if (!origin || allowedOrigins.includes(origin)) {
