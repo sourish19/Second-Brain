@@ -27,7 +27,7 @@ app.use('/api/v1', router);
 // Not found any route --> /{*any} will work in express 5 otherwise * will work
 app.use('/{*any}', (req, res, next) => {
   const message =
-    ENV.NODE_ENV=== 'production'
+    ENV.NODE_ENV === 'production'
       ? 'Route not found'
       : `Route not found ${req.originalUrl}`;
   next(new NotFoundError(message));

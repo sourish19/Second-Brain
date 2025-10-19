@@ -21,6 +21,7 @@ import asyncHandler from '../utils/asyncHandler.util';
 import getPreview from '../utils/preview.util';
 import { generateHash, generateShareableLink } from '../utils/helper.util';
 import { NO_IMAGE } from '../utils/constants.util';
+import { setValueToCache, getValueFromCache } from '../utils/cache.util';
 
 // This is only for sending data to the frontend
 export interface IPreviewLink {
