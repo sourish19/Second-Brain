@@ -1,5 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+import logger from '../config/logger.config';
 
 export interface IUser extends Document {
   name: string;
@@ -44,7 +45,7 @@ userSchema.pre('save', async function (next) {
     user.password = hashedPassword;
     next();
   } catch (error) {
-    console.error('Error occured while hashing password');
+    logger.error({ err: error }, 'Error occured while hashing password');
     next();
   }
 });

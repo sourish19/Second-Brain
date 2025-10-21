@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+import logger from '../config/logger.config';
+import ENV from '../config/env.config';
+
 interface IPreviewLink {
   title: string;
   description: string;
@@ -7,12 +10,11 @@ interface IPreviewLink {
   url: string;
 }
 
-import ENV from '../config/env.config';
-
 const getPreview = async (
   originalLink: string
 ): Promise<IPreviewLink | null> => {
   try {
+    logger.debug({ originalLink }, 'Fetching link preview');
     const rootUrl = 'https://api.linkpreview.net';
 
     const res = await axios.post<IPreviewLink>(
@@ -24,10 +26,14 @@ const getPreview = async (
         },
       }
     );
-    // console.log(res.data);
+
+    logger.debug(
+      { originalLink, title: res.data.title },
+      'Link preview fetched successfully'
+    );
     return res.data;
   } catch (error) {
-    // console.log(error);
+    logger.warn({ originalLink, err: error }, 'Failed to fetch link preview');
     // Fail silently
     return null;
   }

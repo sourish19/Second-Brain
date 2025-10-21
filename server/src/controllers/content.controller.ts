@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+import logger from '../config/logger.config';
 import User from '../schemas/auth.schema';
 import Content from '../schemas/content.schema';
 import Links from '../schemas/links.schema';
@@ -97,13 +98,13 @@ const executeTransactions: TExecuteSession = async (
       // check if tagsId are not empty
       let tagsDoc: ITags[] = [];
       if (tagIds.length > 0) {
-        console.log('TagsId --> ', tagIds);
+        logger.debug({ tagIds }, 'Processing content tags');
 
         tagsDoc = await Tags.find({
           _id: { $in: tagIds },
         }).lean();
 
-        console.log('TagsDoc --> ', tagsDoc);
+        logger.debug({ tagsDoc }, 'Retrieved tag documents');
       }
 
       // Create content & save it in db with session
@@ -130,9 +131,7 @@ const executeTransactions: TExecuteSession = async (
     } catch (error: unknown) {
       await session.abortTransaction();
 
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Transaction Failed --> ', error);
-      }
+      logger.error({ err: error }, 'Transaction failed while creating content');
 
       // Check if error has hasErrorLabel method -- just to check if error is TransientTransactionError or not
       if (
@@ -207,7 +206,8 @@ const storeTagsInDB = async (tags: string[]): Promise<string[]> => {
     return sendTags;
   } catch (error) {
     if (error instanceof Error && process.env.NODE_ENV === 'development') {
-      console.error('Error in storeTagsInDB -->', error);
+      logger.error({ err: error }, 'Error storing tags in database');
+      throw new InternalServerError();
     }
     // return empty arrays causs the transaction function expects id so sending title is not good
     return [];
@@ -218,16 +218,20 @@ export const getAllContents = asyncHandler(async (req, res) => {
   if (!req.user || !('_id' in req.user))
     throw new NotFoundError('User not found');
 
+  logger.info({ userId: req.user._id }, 'Get all contents request');
+
   const cachedContents = await getValueFromCache(
     'user',
     req.user._id as string
   );
 
   // if content is already in cache then return
-  if (cachedContents)
+  if (cachedContents) {
+    logger.debug({ userId: req.user._id }, 'Contents served from cache');
     return res
       .status(200)
       .json(new ApiResponse(200, 'Contents found', cachedContents));
+  }
 
   // Get all contents
   const contents = await Content.find({ userId: req.user._id })
@@ -244,7 +248,12 @@ export const getAllContents = asyncHandler(async (req, res) => {
     // Object.entries(content).forEach(([key, value]) => {
     //   return `${key}: ${value}`;
     // })
-    console.log('tags -->', content);
+    logger.debug(
+      { contentId: String(content._id) },
+      'Processing content for tags'
+    );
+
+    // user not needed here; keep response minimal
     return {
       id: String(content._id),
       title: content.title,
@@ -257,7 +266,14 @@ export const getAllContents = asyncHandler(async (req, res) => {
 
   await setValueToCache('user', req.user._id as string, sanitizedContents);
 
-  return res.status(200).json(new ApiResponse(200, 'Contents found', sanitizedContents));
+  logger.info(
+    { userId: req.user._id, count: sanitizedContents.length },
+    'Contents retrieved from database and cached'
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Contents found', sanitizedContents));
 });
 
 export const addContent = asyncHandler(async (req, res) => {
@@ -265,6 +281,8 @@ export const addContent = asyncHandler(async (req, res) => {
 
   if (!req.user || !('_id' in req.user))
     throw new NotFoundError('User not found');
+
+  logger.info({ userId: req.user._id, type }, 'Add content request');
 
   // Get hashed Link
   const hashedLink: string = generateHash(link);
@@ -274,7 +292,10 @@ export const addContent = asyncHandler(async (req, res) => {
     $and: [{ userId: req.user._id }, { hashedLink }],
   }).lean();
 
-  if (existingContent) throw new ConflictError('Content already exists');
+  if (existingContent) {
+    logger.warn({ userId: req.user._id, link }, 'Content already exists');
+    throw new ConflictError('Content already exists');
+  }
 
   // Store tags in DB
   let saveTags: string[] = [];
@@ -294,6 +315,11 @@ export const addContent = asyncHandler(async (req, res) => {
     req.user,
     session,
     3
+  );
+
+  logger.info(
+    { userId: req.user._id, contentId: responseData.id, type },
+    'Content added successfully'
   );
 
   res
@@ -317,7 +343,7 @@ export const addContent = asyncHandler(async (req, res) => {
       if (sharedContent)
         await deleteValueFromCache('share', sharedContent?.token);
     } catch (error) {
-      console.error('Failed to delete share cache:', error);
+      logger.error({ err: error }, 'Failed to delete share cache');
     }
   })();
 });
@@ -327,15 +353,28 @@ export const deleteContent = asyncHandler(async (req, res) => {
 
   if (!req.user || !('_id' in req.user)) throw new UnauthorizedError();
 
+  logger.info({ userId: req.user._id, contentId }, 'Delete content request');
+
   // Check if content exists & delete
   const doesContentExist = await Content.findByIdAndDelete(contentId);
 
-  if (!doesContentExist) throw new NotFoundError('Content not found');
+  if (!doesContentExist) {
+    logger.warn(
+      { userId: req.user._id, contentId },
+      'Content not found for deletion'
+    );
+    throw new NotFoundError('Content not found');
+  }
 
   // Delete link
-  const deleteLink = await Links.deleteOne({
+  await Links.deleteOne({
     $and: [{ userId: req.user._id }, { _id: doesContentExist.link }],
   });
+
+  logger.info(
+    { userId: req.user._id, contentId },
+    'Content deleted successfully'
+  );
 
   res
     .status(200)
@@ -358,12 +397,14 @@ export const deleteContent = asyncHandler(async (req, res) => {
       if (sharedContent)
         await deleteValueFromCache('share', sharedContent?.token);
     } catch (error) {
-      console.error('Failed to delete share cache:', error);
+      logger.error({ err: error }, 'Failed to delete share cache');
     }
   })();
 });
 
 export const shareableLink = asyncHandler(async (req, res) => {
+  logger.info({ userId: req.user?._id }, 'Shareable link request');
+
   const findUser = await User.findById(req.user?._id)
     .select('-password')
     .lean();
@@ -378,6 +419,7 @@ export const shareableLink = asyncHandler(async (req, res) => {
   }).lean();
 
   if (findShare) {
+    logger.info({ userId: findUser._id }, 'Shareable link already exists');
     return res.status(200).json(
       new ApiResponse(200, 'Shareable link already exists', {
         link: findShare.shareLink,
@@ -407,6 +449,11 @@ export const shareableLink = asyncHandler(async (req, res) => {
 
   if (!updateShareContent) throw new InternalServerError('Server Error');
 
+  logger.info(
+    { userId: findUser._id, token },
+    'Shareable link created successfully'
+  );
+
   return res.status(200).json(
     new ApiResponse(200, 'Shareable link created successfully', {
       link: createLink,
@@ -414,17 +461,20 @@ export const shareableLink = asyncHandler(async (req, res) => {
   );
 });
 
-export const disableShareableLink = asyncHandler(async (req, res) => {});
+export const disableShareableLink = asyncHandler(async (_req, _res) => {});
 
 export const getSharedContents = asyncHandler(async (req, res) => {
   const { contentToken } = req.params;
 
   if (!contentToken) throw new UnauthorizedError();
 
+  logger.info({ contentToken }, 'Get shared contents request');
+
   const cachedContents = await getValueFromCache('share', contentToken);
 
   // Check if data is already in cache & if not found then go to DB
   if (cachedContents) {
+    logger.debug({ contentToken }, 'Shared contents served from cache');
     return res
       .status(200)
       .json(new ApiResponse(200, 'Contents found', cachedContents));
@@ -437,7 +487,10 @@ export const getSharedContents = asyncHandler(async (req, res) => {
     .populate<{ userId: IUser }>({ path: 'userId' })
     .lean();
 
-  if (!findShare) throw new NotFoundError('Share not found');
+  if (!findShare) {
+    logger.warn({ contentToken }, 'Share not found');
+    throw new NotFoundError('Share not found');
+  }
 
   // Find all contents of the shared user
   const findContents = await Content.find({ userId: findShare?.userId })
@@ -463,6 +516,15 @@ export const getSharedContents = asyncHandler(async (req, res) => {
 
   // Add data to cache
   await setValueToCache('share', contentToken, sanatizedResponse);
+
+  logger.info(
+    {
+      contentToken,
+      ownerId: findShare.userId._id,
+      contentCount: findContents.length,
+    },
+    'Shared contents retrieved and cached'
+  );
 
   return res
     .status(200)

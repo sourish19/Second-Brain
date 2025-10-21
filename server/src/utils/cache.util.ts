@@ -1,5 +1,6 @@
 import redis from '../config/redis.config';
 import ENV from '../config/env.config';
+import logger from '../config/logger.config';
 // TODO: REMOVE let val
 export const setValueToCache = async (
   type: string,
@@ -14,7 +15,8 @@ export const setValueToCache = async (
         `_str_${value}`,
         'EX',
         3600
-      ); // 1hr
+      );
+    // 1hr
     else
       val = await redis.set(
         `${type}:cached:${key}`,
@@ -22,11 +24,11 @@ export const setValueToCache = async (
         'EX',
         3600 // 1hr
       );
-    console.log('Redis set --> ', val);
+    ENV.NODE_ENV !== 'production' && logger.debug({ result: val }, 'Redis set');
   } catch (error) {
     // Fail silently
     ENV.NODE_ENV !== 'production' &&
-      console.error(`Redis cache set failed for key: ${key} --> `, error);
+      logger.error({ err: error, key }, 'Redis cache set failed');
   }
 };
 
@@ -41,13 +43,13 @@ export const getValueFromCache = async (
 
     if (value.startsWith('_str_')) return value.slice(5);
     if (value.startsWith('_json_')) return JSON.parse(value.slice(6));
-    console.log('Redis get -->', value);
+    ENV.NODE_ENV !== 'production' && logger.debug({ value }, 'Redis get');
 
     return value;
   } catch (error) {
     // Fail silently
     ENV.NODE_ENV !== 'production' &&
-      console.error(`Redis cache get failed for key: ${key} --> `, error);
+      logger.error({ err: error, key }, 'Redis cache get failed');
   }
   return null;
 };
@@ -55,10 +57,10 @@ export const getValueFromCache = async (
 export const deleteValueFromCache = async (type: string, key: string) => {
   try {
     const val = await redis.del(`${type}:cached:${key}`);
-    console.log('Redis del --> ', val);
+    ENV.NODE_ENV !== 'production' && logger.debug({ result: val }, 'Redis del');
   } catch (error) {
     // Fail silently
     ENV.NODE_ENV !== 'production' &&
-      console.error(`Redis cache delete failed for key: ${key} --> `, error);
+      logger.error({ err: error, key }, 'Redis cache delete failed');
   }
 };

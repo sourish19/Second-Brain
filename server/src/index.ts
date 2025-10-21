@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import app from './app';
 import dbConfig from './config/db.config';
+import logger from './config/logger.config';
 
 import ENV from './config/env.config';
 
@@ -10,18 +11,18 @@ const PORT: number = +ENV.PORT || 5000;
 dbConfig
   .connection()
   .then(() => {
-    console.log('✅ Db connected successfully');
+    logger.info('Db connected successfully');
 
     app
       .listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+        logger.info({ port: PORT }, 'Server started');
       })
       .on('error', (err) => {
-        console.error('Server failed to start', err);
+        logger.error({ err }, 'Server failed to start');
       });
   })
   .catch((error) => {
-    ENV.NODE_ENV === 'production' &&
-      console.error('❌ Failed to connect to database:', error);
+    if (ENV.NODE_ENV === 'production')
+      logger.error({ err: error }, 'Failed to connect to database');
     process.exit(1);
   });

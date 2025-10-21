@@ -1,6 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import PinoHttp from 'pino-http';
 
 import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
@@ -8,13 +9,14 @@ import { NotFoundError } from './utils/apiError.util';
 
 import corsConfig from './config/cors.config';
 import { globalLimiter } from './config/rateLimit.config';
-
 import ENV from './config/env.config';
+import logger from './config/logger.config';
 
 const app = express();
 
 app.use(corsConfig());
 
+app.use(PinoHttp({ logger }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());

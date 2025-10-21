@@ -42,6 +42,10 @@ const envSchema = z.object({
   LINK_PREVIEW_API: z.string().refine((key) => key.length === 32, {
     message: 'invalid LINK_PREVIEW_API',
   }),
+
+  PINO_LOG_LEVEL: z
+    .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
+    .default('info'),
 });
 
 // Infer the TS type from the schema
