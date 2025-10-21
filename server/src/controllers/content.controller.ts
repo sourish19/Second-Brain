@@ -21,7 +21,11 @@ import asyncHandler from '../utils/asyncHandler.util';
 import getPreview from '../utils/preview.util';
 import { generateHash, generateShareableLink } from '../utils/helper.util';
 import { NO_IMAGE } from '../utils/constants.util';
-import { setValueToCache, getValueFromCache } from '../utils/cache.util';
+import {
+  setValueToCache,
+  getValueFromCache,
+  deleteValueFromCache,
+} from '../utils/cache.util';
 
 // This is only for sending data to the frontend
 export interface IPreviewLink {
@@ -43,13 +47,27 @@ type TBody = {
 type TExecuteSession = (
   title: string | null,
   type: string,
-  tagIds: unknown[],
+  tagIds: string[],
   link: string,
   hashedLink: string,
   user: IUser,
   session: mongoose.ClientSession,
   retryCount: number
 ) => Promise<IPreviewLink>;
+
+type ITagsArray = {
+  _id: mongoose.Types.ObjectId;
+  tagTitle: string;
+};
+
+type LeanContent = {
+  _id: mongoose.Types.ObjectId;
+  title: string;
+  type: string;
+  image?: string;
+  tags: ITagsArray[];
+  link: { originalLink: string };
+};
 
 // Transction login
 const executeTransactions: TExecuteSession = async (
@@ -76,9 +94,17 @@ const executeTransactions: TExecuteSession = async (
 
       const previewData = await getPreview(link);
 
-      const tagsDoc = await Tags.find({
-        _id: { $in: tagIds },
-      }).lean();
+      // check if tagsId are not empty
+      let tagsDoc: ITags[] = [];
+      if (tagIds.length > 0) {
+        console.log('TagsId --> ', tagIds);
+
+        tagsDoc = await Tags.find({
+          _id: { $in: tagIds },
+        }).lean();
+
+        console.log('TagsDoc --> ', tagsDoc);
+      }
 
       // Create content & save it in db with session
       const newContent = new Content({
@@ -87,7 +113,7 @@ const executeTransactions: TExecuteSession = async (
         image: previewData?.image || NO_IMAGE,
         type,
         link: linkDoc._id,
-        tags: tagsDoc.map((tag) => tag._id),
+        tags: tagsDoc?.map((tag) => tag._id),
       });
       await newContent.save({ session });
 
@@ -99,7 +125,7 @@ const executeTransactions: TExecuteSession = async (
         type: newContent.type,
         link: linkDoc.originalLink,
         image: newContent.image || NO_IMAGE,
-        tags: tagsDoc.map((tag) => tag.tagTitle),
+        tags: tagsDoc?.map((tag) => tag.tagTitle),
       };
     } catch (error: unknown) {
       await session.abortTransaction();
@@ -141,97 +167,117 @@ const executeTransactions: TExecuteSession = async (
 };
 
 // Store tags in DB
-const storeTagsInDB = async (tags: string[]): Promise<unknown[]> => {
+const storeTagsInDB = async (tags: string[]): Promise<string[]> => {
   try {
-    const existingTags = await Tags.find({ tagTitle: { $in: tags } }).lean();
+    const existingTags = await Tags.find({ tagTitle: { $in: tags } }).lean<
+      ITagsArray[]
+    >();
 
-    // If all tags are already in DB return it
-    if (existingTags.length === tags.length) return tags;
+    // if all tags are already in db
+    if (existingTags.length === tags.length) {
+      return existingTags.map((t) => t._id.toString());
+    }
 
-    // Make an array of tags title which are there in the dv
-    const existingTagTitles = new Set(existingTags.map((tag) => tag.tagTitle));
+    // filter new tags
+    const existingTagTitles = new Set(existingTags.map((t) => t.tagTitle));
+    const newTags = tags.filter((tag) => !existingTagTitles.has(tag));
 
-    // Get the tags which are not there in the db
-    const newTag = tags.filter((tag) => !existingTagTitles.has(tag));
+    let createdTags: ITagsArray[] = [];
 
-    // Create new tag whic are not in the db
-    let createdTags;
-    if (newTag.length > 0) {
-      createdTags = await Tags.insertMany(
-        newTag.map((tag) => ({ tagTitle: tag })),
+    if (newTags.length > 0) {
+      // insert new tags in dv
+      const insertedDocs = await Tags.insertMany(
+        newTags.map((tag) => ({ tagTitle: tag })),
         { ordered: false }
-      ); // ignore duplicate
+      );
+
+      // documents to plain objects causs ts is giving me nightmare
+      createdTags = insertedDocs.map((doc) => ({
+        _id: doc._id as mongoose.Types.ObjectId,
+        tagTitle: doc.tagTitle,
+      }));
     }
 
-    let sendTags: unknown[] = [];
-    if (createdTags && createdTags?.length > 0) {
-      sendTags = [
-        ...existingTags.map((tag) => tag._id),
-        ...createdTags?.map((tag) => tag._id),
-      ];
-    }
+    // combine existing & newly created tags
+    const sendTags = [
+      ...existingTags.map((t) => t._id.toString()),
+      ...createdTags.map((t) => t._id.toString()),
+    ];
 
     return sendTags;
   } catch (error) {
-    // Fail silently
-    if (error instanceof Error) {
-      process.env.NODE_ENV === 'development' &&
-        console.error(' Error in storeTagsInDB --> ', error);
+    if (error instanceof Error && process.env.NODE_ENV === 'development') {
+      console.error('Error in storeTagsInDB -->', error);
     }
+    // return empty arrays causs the transaction function expects id so sending title is not good
+    return [];
   }
-  return tags;
 };
 
 export const getAllContents = asyncHandler(async (req, res) => {
-  const findUser = await User.findById(req.user?._id).select('-password');
+  if (!req.user || !('_id' in req.user))
+    throw new NotFoundError('User not found');
 
-  if (!findUser) throw new NotFoundError('User not found');
+  const cachedContents = await getValueFromCache(
+    'user',
+    req.user._id as string
+  );
+
+  // if content is already in cache then return
+  if (cachedContents)
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Contents found', cachedContents));
 
   // Get all contents
-  const contents = await Content.find({ userId: findUser._id })
-    .populate<{ tags: ITags }>({ path: 'tags', select: 'tagTitle' })
-    .populate<{ link: ILinks }>({ path: 'link', select: 'originalLink' })
-    .lean();
+  const contents = await Content.find({ userId: req.user._id })
+    .populate<{ tags: ITagsArray[] }>({ path: 'tags', select: 'tagTitle' })
+    .populate<{
+      link: { originalLink: string };
+    }>({ path: 'link', select: 'originalLink' })
+    .lean<LeanContent[]>();
 
   if (!contents || contents.length === 0)
     throw new NotFoundError('No Contents Available');
 
   const sanitizedContents = contents.map((content) => {
+    // Object.entries(content).forEach(([key, value]) => {
+    //   return `${key}: ${value}`;
+    // })
+    console.log('tags -->', content);
     return {
       id: String(content._id),
       title: content.title,
       type: content.type,
-      link: content.link?.originalLink,
-      tags: content.tags.tagTitle,
+      link: content.link.originalLink,
+      tags: content.tags?.map((tag) => tag.tagTitle) || [],
       image: content.image || NO_IMAGE,
     };
   });
 
-  return res.status(200).json(new ApiResponse(200, 'Contents found', contents));
+  await setValueToCache('user', req.user._id as string, sanitizedContents);
+
+  return res.status(200).json(new ApiResponse(200, 'Contents found', sanitizedContents));
 });
 
 export const addContent = asyncHandler(async (req, res) => {
   const { title = null, link, type, tags } = req.body as TBody;
 
-  // Find the user who is adding the content
-  const findUser = await User.findById(req.user?._id)
-    .select('-password')
-    .lean();
-
-  if (!findUser) throw new NotFoundError('User not found');
+  if (!req.user || !('_id' in req.user))
+    throw new NotFoundError('User not found');
 
   // Get hashed Link
   const hashedLink: string = generateHash(link);
 
   // Check if content already exists
   const existingContent = await Links.findOne({
-    $and: [{ userId: findUser._id }, { hashedLink }],
+    $and: [{ userId: req.user._id }, { hashedLink }],
   }).lean();
 
   if (existingContent) throw new ConflictError('Content already exists');
 
   // Store tags in DB
-  let saveTags: unknown[] = [];
+  let saveTags: string[] = [];
   if (tags && tags.length > 0) {
     saveTags = await storeTagsInDB(tags);
   }
@@ -245,25 +291,41 @@ export const addContent = asyncHandler(async (req, res) => {
     saveTags,
     link,
     hashedLink,
-    findUser,
+    req.user,
     session,
     3
   );
 
-  return res
+  res
     .status(201)
     .json(new ApiResponse(201, 'Content added successfully', responseData));
+
+  // err are caught locally so they dont propagate to Express middleware
+  // run this in background
+  void (async () => {
+    try {
+      // From here need to delete contents from cache ---
+      // First delete for actual user
+      await deleteValueFromCache('user', req.user?._id as string);
+
+      // Then delete for shared user
+      const sharedContent = await Share.findOne({
+        userId: req.user?._id,
+        share: true,
+      }).lean();
+      // if content is shared then delete from cache
+      if (sharedContent)
+        await deleteValueFromCache('share', sharedContent?.token);
+    } catch (error) {
+      console.error('Failed to delete share cache:', error);
+    }
+  })();
 });
 
 export const deleteContent = asyncHandler(async (req, res) => {
   const { contentId } = req.body;
 
-  // Find user
-  const findUser = await User.findById(req.user?._id)
-    .select('-password')
-    .lean();
-
-  if (!findUser) throw new NotFoundError('User not found');
+  if (!req.user || !('_id' in req.user)) throw new UnauthorizedError();
 
   // Check if content exists & delete
   const doesContentExist = await Content.findByIdAndDelete(contentId);
@@ -272,12 +334,33 @@ export const deleteContent = asyncHandler(async (req, res) => {
 
   // Delete link
   const deleteLink = await Links.deleteOne({
-    $and: [{ userId: findUser._id }, { _id: doesContentExist.link }],
+    $and: [{ userId: req.user._id }, { _id: doesContentExist.link }],
   });
 
-  return res
+  res
     .status(200)
     .json(new ApiResponse(200, 'Content deleted successfully', {}));
+
+  // err are caught locally so they dont propagate to Express middleware
+  // run this in background
+  void (async () => {
+    try {
+      // From here need to delete contents from cache ---
+      // First delete for actual user
+      await deleteValueFromCache('user', req.user?._id as string);
+
+      // Then delete for shared user
+      const sharedContent = await Share.findOne({
+        userId: req.user?._id,
+        share: true,
+      }).lean();
+      // if content is shared then delete from cache
+      if (sharedContent)
+        await deleteValueFromCache('share', sharedContent?.token);
+    } catch (error) {
+      console.error('Failed to delete share cache:', error);
+    }
+  })();
 });
 
 export const shareableLink = asyncHandler(async (req, res) => {
@@ -331,10 +414,21 @@ export const shareableLink = asyncHandler(async (req, res) => {
   );
 });
 
-export const getSharedContents = asyncHandler(async (req, res, next) => {
+export const disableShareableLink = asyncHandler(async (req, res) => {});
+
+export const getSharedContents = asyncHandler(async (req, res) => {
   const { contentToken } = req.params;
 
   if (!contentToken) throw new UnauthorizedError();
+
+  const cachedContents = await getValueFromCache('share', contentToken);
+
+  // Check if data is already in cache & if not found then go to DB
+  if (cachedContents) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Contents found', cachedContents));
+  }
 
   // Check if share link is valid and also the shared user has share turned on if not then the link is not valid
   const findShare = await Share.findOne({
@@ -366,6 +460,9 @@ export const getSharedContents = asyncHandler(async (req, res, next) => {
       };
     }),
   };
+
+  // Add data to cache
+  await setValueToCache('share', contentToken, sanatizedResponse);
 
   return res
     .status(200)

@@ -14,6 +14,7 @@ export enum CONTENT_TYPES {
   ARTICLE = 'article',
   TWEET = 'tweet',
   YOUTUBE = 'youtube',
+  GITHUB = 'github',
   OTHER = 'other',
 }
 

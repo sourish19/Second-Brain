@@ -1,17 +1,28 @@
 import redis from '../config/redis.config';
 import ENV from '../config/env.config';
-
-export const setValueToCache = async (key: string, value: unknown) => {
+// TODO: REMOVE let val
+export const setValueToCache = async (
+  type: string,
+  key: string,
+  value: unknown
+) => {
   try {
+    let val;
     if (typeof value === 'string')
-      await redis.set(`cached:${key}`, `_str_${value}`, 'EX', 3600); // 1hr
+      val = await redis.set(
+        `${type}:cached:${key}`,
+        `_str_${value}`,
+        'EX',
+        3600
+      ); // 1hr
     else
-      await redis.set(
-        `cached:${key}`,
+      val = await redis.set(
+        `${type}:cached:${key}`,
         `_json_${JSON.stringify(value)}`,
         'EX',
         3600 // 1hr
       );
+    console.log('Redis set --> ', val);
   } catch (error) {
     // Fail silently
     ENV.NODE_ENV !== 'production' &&
@@ -20,15 +31,17 @@ export const setValueToCache = async (key: string, value: unknown) => {
 };
 
 export const getValueFromCache = async (
+  type: string,
   key: string
 ): Promise<unknown | null> => {
   try {
-    const value = await redis.get(`cached:${key}`);
+    const value = await redis.get(`${type}:cached:${key}`);
 
     if (!value) return null;
 
     if (value.startsWith('_str_')) return value.slice(5);
     if (value.startsWith('_json_')) return JSON.parse(value.slice(6));
+    console.log('Redis get -->', value);
 
     return value;
   } catch (error) {
@@ -39,9 +52,10 @@ export const getValueFromCache = async (
   return null;
 };
 
-export const deleteValueFromCache = async (key: string) => {
+export const deleteValueFromCache = async (type: string, key: string) => {
   try {
-    await redis.del(`cached:${key}`);
+    const val = await redis.del(`${type}:cached:${key}`);
+    console.log('Redis del --> ', val);
   } catch (error) {
     // Fail silently
     ENV.NODE_ENV !== 'production' &&

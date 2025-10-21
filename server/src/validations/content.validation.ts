@@ -6,7 +6,7 @@ const titleSchemaValidation = z.optional(
   z
     .string()
     .min(4, { message: 'Title must be at least 4 characters' })
-    .max(20, { message: 'Title must be at most 20 characters ' })
+    .max(50, { message: 'Title must be at most 20 characters ' })
 );
 
 const linkSchemaValidation = z.string({
