@@ -18,11 +18,11 @@ dbConfig
         logger.info({ port: PORT }, 'Server started');
       })
       .on('error', (err) => {
-        logger.error({ err }, 'Server failed to start');
+        logger.fatal({ err }, 'Server failed to start');
       });
   })
   .catch((error) => {
     if (ENV.NODE_ENV === 'production')
-      logger.error({ err: error }, 'Failed to connect to database');
+      logger.fatal({ err: error }, 'Failed to connect to database');
     process.exit(1);
   });

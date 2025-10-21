@@ -1,7 +1,7 @@
 import redis from '../config/redis.config';
 import ENV from '../config/env.config';
 import logger from '../config/logger.config';
-// TODO: REMOVE let val
+
 export const setValueToCache = async (
   type: string,
   key: string,

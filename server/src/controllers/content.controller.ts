@@ -61,7 +61,7 @@ type ITagsArray = {
   tagTitle: string;
 };
 
-type LeanContent = {
+type TLeanContent = {
   _id: mongoose.Types.ObjectId;
   title: string;
   type: string;
@@ -239,7 +239,7 @@ export const getAllContents = asyncHandler(async (req, res) => {
     .populate<{
       link: { originalLink: string };
     }>({ path: 'link', select: 'originalLink' })
-    .lean<LeanContent[]>();
+    .lean<TLeanContent[]>();
 
   if (!contents || contents.length === 0)
     throw new NotFoundError('No Contents Available');
@@ -461,7 +461,29 @@ export const shareableLink = asyncHandler(async (req, res) => {
   );
 });
 
-export const disableShareableLink = asyncHandler(async (_req, _res) => {});
+export const disableShareableLink = asyncHandler(async (req, res) => {
+  const userShareContent  = await Share.findOneAndUpdate({
+    userId: req.user?._id,
+    share:true
+  },{
+    share:false,
+    shareLink:undefined,
+    token:undefined
+  }).lean()
+
+  if(!userShareContent) throw new NotFoundError('Shareable link not found')
+
+  logger.info({ userId: req.user?._id }, 'Shareable link disabled successfully')
+  res.status(200).json(new ApiResponse(200, 'Shareable link disabled successfully', {}))
+    
+  void(async()=>{
+    try {
+      await deleteValueFromCache('share', userShareContent?.token);
+    } catch (error) {
+      logger.error({ err: error }, 'Failed to delete share cache');
+    }
+  })()
+});
 
 export const getSharedContents = asyncHandler(async (req, res) => {
   const { contentToken } = req.params;
@@ -496,7 +518,7 @@ export const getSharedContents = asyncHandler(async (req, res) => {
   const findContents = await Content.find({ userId: findShare?.userId })
     .populate<{ link: ILinks }>({ path: 'link', select: 'originalLink' })
     .populate<{ tags: ITags }>({ path: 'tags', select: 'tagTitle' })
-    .lean();
+    .lean<TLeanContent[]>();
 
   if (!findContents || findContents.length === 0)
     throw new NotFoundError('Contents not found');
@@ -507,8 +529,8 @@ export const getSharedContents = asyncHandler(async (req, res) => {
       return {
         title: content.title,
         type: content.type,
-        link: content.link?.originalLink,
-        tags: content.tags,
+        link: content.link.originalLink,
+        tags: content.tags.map((t) => t.tagTitle),
         image: content.image,
       };
     }),

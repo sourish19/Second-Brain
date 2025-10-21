@@ -1,7 +1,7 @@
 import pino from 'pino';
+import { TransportTargetOptions } from 'pino';
 import { cwd } from 'node:process';
 import { join } from 'node:path';
-import { TransportTargetOptions } from 'pino';
 
 import ENV from './env.config';
 
@@ -17,7 +17,7 @@ const targets: TransportTargetOptions[] = [
 ];
 
 // pretty printing only in dev env
-if (process.env.NODE_ENV !== 'production') {
+if (ENV.NODE_ENV !== 'production') {
   targets.push({
     target: 'pino-pretty',
     level: 'debug',
@@ -34,7 +34,7 @@ const transport = pino.transport({ targets });
 
 const logger = pino(
   {
-    level: process.env.PINO_LOG_LEVEL || 'info',
+    level: ENV.PINO_LOG_LEVEL || 'info',
     timestamp: pino.stdTimeFunctions.isoTime,
     base: {
       env: ENV.NODE_ENV || 'development',
