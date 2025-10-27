@@ -1,67 +1,89 @@
-import { Link } from '@tanstack/react-router'
+import { useState } from 'react';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuList,
+} from '@/components/ui/navigation-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { NavLinksConstants } from '@/constants/appConstants';
+import useHeaderScroll from '@/hooks/useHeaderScroll';
 
-import { useState } from 'react'
-import { Home, Menu, X } from 'lucide-react'
+const Header = () => {
+	const [open, setOpen] = useState(false);
 
-export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+	const scrolled = useHeaderScroll();
 
-  return (
-    <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/">
-            <img
-              src="/tanstack-word-logo-white.svg"
-              alt="TanStack Logo"
-              className="h-10"
-            />
-          </Link>
-        </h1>
-      </header>
+	return (
+		<header
+			className={`sticky top-0 z-50 w-full text-neutral-100  px-4 md:px-8 font-poppins ${scrolled ? 'backdrop-blur-md  border-b border-neutral-700' : 'bg-transparent'}  `}
+		>
+			<div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
+				{/* Left side */}
 
-      <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Navigation</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={24} />
-          </button>
-        </div>
+				<div className="text-xl md:text-2xl  text-neutral-100 tracking-wide  bg-clip-textdrop-shadow-lg font-bitcount">
+					SecondBrain
+				</div>
 
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-            activeProps={{
-              className:
-                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-            }}
-          >
-            <Home size={20} />
-            <span className="font-medium">Home</span>
-          </Link>
+				{/* Desktop Nav */}
+				<NavigationMenu className="hidden cursor-pointer md:flex">
+					<NavigationMenuList className="flex gap-4">
+						{NavLinksConstants.map((link, i) => (
+							<NavigationMenuItem key={i}>
+								<button className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer  hover:bg-accent hover:text-accent-foreground transition">
+									{link}
+								</button>
+							</NavigationMenuItem>
+						))}
+					</NavigationMenuList>
+				</NavigationMenu>
 
-          {/* Demo Links Start */}
+				{/* Right side (buttons) */}
+				<div className="hidden  md:flex gap-3">
+					<Button className="cursor-pointer" variant="ghost" size="sm">
+						Sign In
+					</Button>
+					<Button className="cursor-pointer" size="sm">
+						Get Started
+					</Button>
+				</div>
 
-          {/* Demo Links End */}
-        </nav>
-      </aside>
-    </>
-  )
-}
+				{/* Mobile Menu Button */}
+				<div className="md:hidden">
+					<Popover open={open} onOpenChange={setOpen}>
+						<PopoverTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => setOpen(!open)}
+								className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+							>
+								<Menu />
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent align="end" className="mt-2 w-48 p-2  flex flex-col gap-1">
+							{NavLinksConstants.map((link, i) => (
+								<button
+									key={i}
+									className="w-full rounded-md px-3 py-2 text-left text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground transition"
+								>
+									{link}
+								</button>
+							))}
+							<div className="border-t my-2"></div>
+							<Button variant="ghost" size="sm" className="w-full">
+								Sign In
+							</Button>
+							<Button size="sm" className="w-full">
+								Get Started
+							</Button>
+						</PopoverContent>
+					</Popover>
+				</div>
+			</div>
+		</header>
+	);
+};
+
+export default Header;

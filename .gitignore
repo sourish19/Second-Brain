@@ -10,3 +10,9 @@ dist/
 # IDEs
 .vscode/
 notes.md
+
+request.http 
+
+# LOGS
+logs
+
