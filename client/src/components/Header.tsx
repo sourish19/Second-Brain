@@ -31,7 +31,7 @@ const Header = () => {
 					<NavigationMenuList className="flex gap-4">
 						{NavLinksConstants.map((link, i) => (
 							<NavigationMenuItem key={i}>
-								<button className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer  hover:bg-accent hover:text-accent-foreground transition">
+								<button type='button' className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer  hover:bg-accent hover:text-accent-foreground transition">
 									{link}
 								</button>
 							</NavigationMenuItem>
@@ -65,6 +65,7 @@ const Header = () => {
 						<PopoverContent align="end" className="mt-2 w-48 p-2  flex flex-col gap-1">
 							{NavLinksConstants.map((link, i) => (
 								<button
+									type='button'
 									key={i}
 									className="w-full rounded-md px-3 py-2 text-left text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground transition"
 								>

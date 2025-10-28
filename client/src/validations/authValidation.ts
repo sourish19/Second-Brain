@@ -39,3 +39,19 @@ export const SigninValidationSchema = UserValidationSchema.pick({
 	email: true,
 	password: true,
 });
+
+export type TSignup = z.infer<typeof SignupValidationSchema>;
+export type TSignin = z.infer<typeof SigninValidationSchema>;
+
+const AuthResponseSchema = z.object({
+	success: z.boolean(),
+	status: z.number(),
+	message: z.string(),
+	data: z.object({
+		name: z.string(),
+		email: z.string(),
+	}),
+});
+
+export type TLoginResponse = z.infer<typeof AuthResponseSchema>;
+export type TRegsisterResponse = z.infer<typeof AuthResponseSchema>;

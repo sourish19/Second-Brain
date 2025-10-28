@@ -1,14 +1,24 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
+import { useMutation } from '@tanstack/react-query';
 
 import { AuthForm } from '@/components';
-import { SignupValidationSchema } from '@/validations/appValidation';
+import { SignupValidationSchema } from '@/validations/authValidation';
+import type { TSignup } from '@/validations/authValidation';
+import { registerUser } from '@/api/auth';
 
 export const Route = createFileRoute('/signup')({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const mutation = useMutation({
+		mutationFn: async (formData: TSignup) => {
+			const data = await registerUser(formData);
+			return data;
+		},
+	});
+
 	const form = useForm({
 		defaultValues: {
 			name: '',
@@ -20,6 +30,7 @@ function RouteComponent() {
 		},
 		onSubmit: ({ value }) => {
 			console.log('Form data:', value);
+			mutation.mutate(value)
 		},
 	});
 

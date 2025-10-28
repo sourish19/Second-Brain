@@ -27,7 +27,7 @@ app.use(globalLimiter);
 app.use('/api/v1', router);
 
 // Not found any route --> /{*any} will work in express 5 otherwise * will work
-app.use('/{*any}', (req, res, next) => {
+app.use('/{*any}', (req, _res, next) => {
   const message =
     ENV.NODE_ENV === 'production'
       ? 'Route not found'

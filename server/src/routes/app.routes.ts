@@ -26,7 +26,7 @@ import { authLimiter } from '../config/rateLimit.config';
 
 const router = Router();
 
-router.route('/get').get((req, res) => {
+router.route('/get').get((_req, res) => {
   res.send('Hello');
 });
 
