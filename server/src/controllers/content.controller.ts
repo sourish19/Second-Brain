@@ -462,27 +462,35 @@ export const shareableLink = asyncHandler(async (req, res) => {
 });
 
 export const disableShareableLink = asyncHandler(async (req, res) => {
-  const userShareContent  = await Share.findOneAndUpdate({
-    userId: req.user?._id,
-    share:true
-  },{
-    share:false,
-    shareLink:undefined,
-    token:undefined
-  }).lean()
+  const userShareContent = await Share.findOneAndUpdate(
+    {
+      userId: req.user?._id,
+      share: true,
+    },
+    {
+      share: false,
+      shareLink: undefined,
+      token: undefined,
+    }
+  ).lean();
 
-  if(!userShareContent) throw new NotFoundError('Shareable link not found')
+  if (!userShareContent) throw new NotFoundError('Shareable link not found');
 
-  logger.info({ userId: req.user?._id }, 'Shareable link disabled successfully')
-  res.status(200).json(new ApiResponse(200, 'Shareable link disabled successfully', {}))
-    
-  void(async()=>{
+  logger.info(
+    { userId: req.user?._id },
+    'Shareable link disabled successfully'
+  );
+  res
+    .status(200)
+    .json(new ApiResponse(200, 'Shareable link disabled successfully', {}));
+
+  void (async () => {
     try {
       await deleteValueFromCache('share', userShareContent?.token);
     } catch (error) {
       logger.error({ err: error }, 'Failed to delete share cache');
     }
-  })()
+  })();
 });
 
 export const getSharedContents = asyncHandler(async (req, res) => {
