@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   registerUser,
   loginUser,
+  getUser,
   logoutUser,
   handleGoogleAuthLogin,
 } from '../controllers/auth.controller';
@@ -37,6 +38,9 @@ router
 router
   .route('/users/login')
   .post(authLimiter, ValidateData(userSchemaValidation), loginUser);
+router
+  .route('/users/getme')
+  .get(authLimiter, isLoggedIn, getUser);
 router.route('/users/logout').post(logoutUser);
 router.route('/users/google/callback').get(handleGoogleAuthLogin);
 

@@ -97,6 +97,29 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, 'Logout successfull', {}));
 });
 
+export const getUser = asyncHandler(async (req, res) => {
+  const id = req.user?._id
+
+  if(!id) {
+    logger.warn({ userId: id }, 'User details not found');
+    throw new NotFoundError('User details not found');
+  }
+
+  const findUser = await User.findById(id).select('-password');
+
+  if (!findUser) {
+    logger.warn({ userId: id }, 'User details not found');
+    throw new NotFoundError('User details not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'User details', {
+      name: findUser.name,
+      email: findUser.email,
+    })
+  );
+});
+
 // TODO: Need to implement this
 export const handleGoogleAuthLogin = asyncHandler(async (_req, _res) => {
   return _res;
