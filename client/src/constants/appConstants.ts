@@ -1,4 +1,6 @@
 import { Link2, Tags, FileText, Share2, Search, Smartphone } from 'lucide-react';
+import { z } from 'zod';
+import type { ReactFormExtendedApi } from '@tanstack/react-form';
 
 export const NavLinksConstants = ['Home', 'Features', 'Pricing', 'About'];
 
@@ -48,4 +50,21 @@ export const FeaturesConstants = {
 			'Access your SecondBrain anytime, anywhere—from desktop, tablet, or mobile—so your links are always with you.',
 		image: Smartphone,
 	},
+};
+
+const FieldEnum = z.enum(['Name', 'Email', 'Password']);
+const TypeEnum = z.enum(['Sign In', 'Sign Up']);
+
+const AuthFormSchema = z.object({
+	title: z.string(),
+	description: z.string(),
+	fields: z.array(FieldEnum),
+	type: TypeEnum,
+	action: z.string(),
+});
+
+export type AuthFormSchemaType = z.infer<typeof AuthFormSchema>;
+
+export type AuthFormProps = AuthFormSchemaType & {
+	form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any, any, any>;
 };

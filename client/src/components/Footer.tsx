@@ -1,4 +1,4 @@
-import useTime from "@/hooks/useTime";
+import useTime from '@/hooks/useTime';
 
 const Footer = () => {
 	const time = useTime();
