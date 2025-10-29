@@ -1,24 +1,37 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 import { AuthForm } from '@/components';
 import { SigninValidationSchema } from '@/validations/authValidation';
 import type { TSignin } from '@/validations/authValidation';
 import { loginUser } from '@/api/auth';
+import type { TLoginResponse } from '@/validations/authValidation';
+
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/signin')({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const mutation = useMutation({
+	const navigate = useNavigate({ from: '/signin' });
+
+	const mutation = useMutation<TLoginResponse | string, unknown, TSignin, unknown>({
 		mutationFn: async (formData: TSignin) => {
 			const data = await loginUser(formData);
+
+			if (data instanceof Object) {
+				toast.success(data.message);
+				navigate({ to: '/dashboard' });
+			} else {
+				toast.error(data);
+			}
 			return data;
 		},
 	});
-
+	
 	const form = useForm({
 		defaultValues: {
 			email: '',
@@ -41,6 +54,7 @@ function RouteComponent() {
 				type="Sign In"
 				action="Sign Up"
 				form={form}
+				mutation={mutation}
 			/>
 		</div>
 	);

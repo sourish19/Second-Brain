@@ -1,20 +1,33 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+
+import { toast } from 'sonner';
 
 import { AuthForm } from '@/components';
 import { SignupValidationSchema } from '@/validations/authValidation';
 import type { TSignup } from '@/validations/authValidation';
 import { registerUser } from '@/api/auth';
+import type { TRegsisterResponse } from '@/validations/authValidation';
 
 export const Route = createFileRoute('/signup')({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const mutation = useMutation({
+	const navigate = useNavigate({ from: '/signup' });
+
+	const mutation = useMutation<TRegsisterResponse | string, unknown, TSignup, unknown>({
 		mutationFn: async (formData: TSignup) => {
 			const data = await registerUser(formData);
+
+			if (data instanceof Object) {
+				toast.success(data.message);
+				navigate({ to: '/signin' });
+			} else {
+				toast.error(data);
+			}
 			return data;
 		},
 	});
@@ -30,7 +43,7 @@ function RouteComponent() {
 		},
 		onSubmit: ({ value }) => {
 			console.log('Form data:', value);
-			mutation.mutate(value)
+			mutation.mutate(value);
 		},
 	});
 
@@ -43,6 +56,7 @@ function RouteComponent() {
 				type="Sign Up"
 				action="Sign In"
 				form={form}
+				mutation={mutation}
 			/>
 		</div>
 	);

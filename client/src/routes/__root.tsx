@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppLayout from '@/layouts/AppLayout';
 import Header from '../components/Header';
 
+import { Toaster } from '@/components/ui/sonner';
+
 const queryClient = new QueryClient();
 
 export const Route = createRootRoute({
@@ -26,6 +28,7 @@ export const Route = createRootRoute({
 						},
 					]}
 				/>
+				<Toaster />
 				<ReactQueryDevtools initialIsOpen={false} />
 			</AppLayout>
 		</QueryClientProvider>

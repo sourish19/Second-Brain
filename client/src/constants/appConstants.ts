@@ -1,8 +1,10 @@
 import { Link2, Tags, FileText, Share2, Search, Smartphone } from 'lucide-react';
 import { z } from 'zod';
 import type { ReactFormExtendedApi } from '@tanstack/react-form';
+import type { UseMutationResult } from '@tanstack/react-query';
+// import type { TRegsisterResponse, TLoginResponse, TSignin, TSignup } from '@/validations/authValidation';
 
-export const NavLinksConstants = ['Home', 'Features', 'Pricing', 'About'];
+export const NavLinksConstants = ['Home', 'Features', 'Pricing', 'Dashboard'];
 
 export const HeroConstants = {
 	title: 'Your Second Brain for the Web',
@@ -65,6 +67,7 @@ const AuthFormSchema = z.object({
 
 export type AuthFormSchemaType = z.infer<typeof AuthFormSchema>;
 
-export type AuthFormProps = AuthFormSchemaType & {
+export type AuthFormProps<TResponse, TVariables> = AuthFormSchemaType & {
 	form: ReactFormExtendedApi<any, any, any, any, any, any, any, any, any, any, any, any>;
+	mutation: UseMutationResult<TResponse, unknown, TVariables, unknown>;
 };

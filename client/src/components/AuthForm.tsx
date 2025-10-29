@@ -10,10 +10,19 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { FieldGroup, Field, FieldLabel, FieldSet, FieldError } from '@/components/ui/field';
+import { Spinner } from "@/components/ui/spinner"
 
 import type { AuthFormProps } from '@/constants/appConstants';
 
-const AuthForm = ({ title, description, fields, type, action, form: formApi }: AuthFormProps) => {
+const AuthForm = <TResponse, TVariables>({
+	title,
+	description,
+	fields,
+	type,
+	action,
+	form: formApi,
+	mutation,
+}: AuthFormProps<TResponse, TVariables>) => {
 	return (
 		<Card className="w-75 lg:w-full max-w-md px-2 sm:px-6">
 			<CardHeader className="">
@@ -72,7 +81,9 @@ const AuthForm = ({ title, description, fields, type, action, form: formApi }: A
 					</FieldSet>
 
 					<Button type="submit" className="w-full mt-5 text-xs sm:text-sm">
-						{type}
+						{
+							mutation.isPending ? (<Spinner />) : (type)
+						}
 					</Button>
 				</form>
 			</CardContent>
