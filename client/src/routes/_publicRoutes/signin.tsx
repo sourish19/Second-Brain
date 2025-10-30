@@ -11,7 +11,7 @@ import type { TLoginResponse } from '@/validations/authValidation';
 
 import { toast } from 'sonner';
 
-export const Route = createFileRoute('/signin')({
+export const Route = createFileRoute('/_publicRoutes/signin')({
 	component: RouteComponent,
 });
 
@@ -31,7 +31,7 @@ function RouteComponent() {
 			return data;
 		},
 	});
-	
+
 	const form = useForm({
 		defaultValues: {
 			email: '',

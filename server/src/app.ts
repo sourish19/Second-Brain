@@ -10,13 +10,13 @@ import { NotFoundError } from './utils/apiError.util';
 import corsConfig from './config/cors.config';
 import { globalLimiter } from './config/rateLimit.config';
 import ENV from './config/env.config';
-import logger from './config/logger.config';
+// import logger from './config/logger.config';
 
 const app = express();
 
 app.use(corsConfig());
 
-app.use(PinoHttp({ logger }));
+// app.use(PinoHttp({ logger })); --> If required comment this out later
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());

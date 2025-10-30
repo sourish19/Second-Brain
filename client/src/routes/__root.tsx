@@ -4,8 +4,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import AppLayout from '@/layouts/AppLayout';
-import Header from '../components/Header';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 import { Toaster } from '@/components/ui/sonner';
 
@@ -14,8 +13,7 @@ const queryClient = new QueryClient();
 export const Route = createRootRoute({
 	component: () => (
 		<QueryClientProvider client={queryClient}>
-			<AppLayout>
-				<Header />
+			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 				<Outlet />
 				<TanStackDevtools
 					config={{
@@ -30,7 +28,7 @@ export const Route = createRootRoute({
 				/>
 				<Toaster />
 				<ReactQueryDevtools initialIsOpen={false} />
-			</AppLayout>
+			</ThemeProvider>
 		</QueryClientProvider>
 	),
 });

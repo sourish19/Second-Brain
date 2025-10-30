@@ -1,4 +1,4 @@
-import  z from 'zod';
+import z from 'zod';
 
 export const UserValidationSchema = z.object({
 	name: z
@@ -29,21 +29,7 @@ export const UserValidationSchema = z.object({
 	),
 });
 
-export const SignupValidationSchema = UserValidationSchema.pick({
-	name: true,
-	email: true,
-	password: true,
-});
-
-export const SigninValidationSchema = UserValidationSchema.pick({
-	email: true,
-	password: true,
-});
-
-export type TSignup = z.infer<typeof SignupValidationSchema>;
-export type TSignin = z.infer<typeof SigninValidationSchema>;
-
-const AuthResponseSchema = z.object({
+export const AuthResponseSchema = z.object({
 	success: z.boolean(),
 	status: z.number(),
 	message: z.string(),
@@ -53,5 +39,32 @@ const AuthResponseSchema = z.object({
 	}),
 });
 
+export const SignupValidationSchema = UserValidationSchema.pick({
+	name: true,
+	email: true,
+	password: true,
+});
+export const SigninValidationSchema = UserValidationSchema.pick({
+	email: true,
+	password: true,
+});
+const AuthenticatedUserSchema = AuthResponseSchema.shape.data.pick({
+	name: true,
+	email: true,
+});
+export const LogoutUserSchema = AuthResponseSchema.pick({
+	success: true,
+	status: true,
+	message: true,
+}).extend({
+	data: z.object({}),
+});
+
+export type TAuthenticatedUser = z.infer<typeof AuthenticatedUserSchema>;
+export type TSignin = z.infer<typeof SigninValidationSchema>;
+export type TSignup = z.infer<typeof SignupValidationSchema>;
+
 export type TLoginResponse = z.infer<typeof AuthResponseSchema>;
 export type TRegsisterResponse = z.infer<typeof AuthResponseSchema>;
+export type TGetUserResponse = z.infer<typeof AuthResponseSchema>;
+export type TLogoutUserResponse = z.infer<typeof LogoutUserSchema>;

@@ -9,30 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as SigninRouteImport } from './routes/signin'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as PublicRoutesRouteRouteImport } from './routes/_publicRoutes/route'
+import { Route as PrivateRoutesRouteRouteImport } from './routes/_privateRoutes/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PublicRoutesSignupRouteImport } from './routes/_publicRoutes/signup'
+import { Route as PublicRoutesSigninRouteImport } from './routes/_publicRoutes/signin'
+import { Route as PublicRoutesAboutRouteImport } from './routes/_publicRoutes/about'
+import { Route as PrivateRoutesDashboardRouteImport } from './routes/_privateRoutes/dashboard'
 
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const PublicRoutesRouteRoute = PublicRoutesRouteRouteImport.update({
+  id: '/_publicRoutes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SigninRoute = SigninRouteImport.update({
-  id: '/signin',
-  path: '/signin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const PrivateRoutesRouteRoute = PrivateRoutesRouteRouteImport.update({
+  id: '/_privateRoutes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -40,73 +30,87 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicRoutesSignupRoute = PublicRoutesSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => PublicRoutesRouteRoute,
+} as any)
+const PublicRoutesSigninRoute = PublicRoutesSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => PublicRoutesRouteRoute,
+} as any)
+const PublicRoutesAboutRoute = PublicRoutesAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => PublicRoutesRouteRoute,
+} as any)
+const PrivateRoutesDashboardRoute = PrivateRoutesDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => PrivateRoutesRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
+  '/dashboard': typeof PrivateRoutesDashboardRoute
+  '/about': typeof PublicRoutesAboutRoute
+  '/signin': typeof PublicRoutesSigninRoute
+  '/signup': typeof PublicRoutesSignupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
+  '/dashboard': typeof PrivateRoutesDashboardRoute
+  '/about': typeof PublicRoutesAboutRoute
+  '/signin': typeof PublicRoutesSigninRoute
+  '/signup': typeof PublicRoutesSignupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
+  '/_privateRoutes': typeof PrivateRoutesRouteRouteWithChildren
+  '/_publicRoutes': typeof PublicRoutesRouteRouteWithChildren
+  '/_privateRoutes/dashboard': typeof PrivateRoutesDashboardRoute
+  '/_publicRoutes/about': typeof PublicRoutesAboutRoute
+  '/_publicRoutes/signin': typeof PublicRoutesSigninRoute
+  '/_publicRoutes/signup': typeof PublicRoutesSignupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/dashboard' | '/signin' | '/signup'
+  fullPaths: '/' | '/dashboard' | '/about' | '/signin' | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/signin' | '/signup'
-  id: '__root__' | '/' | '/about' | '/dashboard' | '/signin' | '/signup'
+  to: '/' | '/dashboard' | '/about' | '/signin' | '/signup'
+  id:
+    | '__root__'
+    | '/'
+    | '/_privateRoutes'
+    | '/_publicRoutes'
+    | '/_privateRoutes/dashboard'
+    | '/_publicRoutes/about'
+    | '/_publicRoutes/signin'
+    | '/_publicRoutes/signup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  DashboardRoute: typeof DashboardRoute
-  SigninRoute: typeof SigninRoute
-  SignupRoute: typeof SignupRoute
+  PrivateRoutesRouteRoute: typeof PrivateRoutesRouteRouteWithChildren
+  PublicRoutesRouteRoute: typeof PublicRoutesRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
+    '/_publicRoutes': {
+      id: '/_publicRoutes'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicRoutesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signin': {
-      id: '/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof SigninRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/_privateRoutes': {
+      id: '/_privateRoutes'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PrivateRoutesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -116,15 +120,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_publicRoutes/signup': {
+      id: '/_publicRoutes/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof PublicRoutesSignupRouteImport
+      parentRoute: typeof PublicRoutesRouteRoute
+    }
+    '/_publicRoutes/signin': {
+      id: '/_publicRoutes/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof PublicRoutesSigninRouteImport
+      parentRoute: typeof PublicRoutesRouteRoute
+    }
+    '/_publicRoutes/about': {
+      id: '/_publicRoutes/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof PublicRoutesAboutRouteImport
+      parentRoute: typeof PublicRoutesRouteRoute
+    }
+    '/_privateRoutes/dashboard': {
+      id: '/_privateRoutes/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof PrivateRoutesDashboardRouteImport
+      parentRoute: typeof PrivateRoutesRouteRoute
+    }
   }
 }
 
+interface PrivateRoutesRouteRouteChildren {
+  PrivateRoutesDashboardRoute: typeof PrivateRoutesDashboardRoute
+}
+
+const PrivateRoutesRouteRouteChildren: PrivateRoutesRouteRouteChildren = {
+  PrivateRoutesDashboardRoute: PrivateRoutesDashboardRoute,
+}
+
+const PrivateRoutesRouteRouteWithChildren =
+  PrivateRoutesRouteRoute._addFileChildren(PrivateRoutesRouteRouteChildren)
+
+interface PublicRoutesRouteRouteChildren {
+  PublicRoutesAboutRoute: typeof PublicRoutesAboutRoute
+  PublicRoutesSigninRoute: typeof PublicRoutesSigninRoute
+  PublicRoutesSignupRoute: typeof PublicRoutesSignupRoute
+}
+
+const PublicRoutesRouteRouteChildren: PublicRoutesRouteRouteChildren = {
+  PublicRoutesAboutRoute: PublicRoutesAboutRoute,
+  PublicRoutesSigninRoute: PublicRoutesSigninRoute,
+  PublicRoutesSignupRoute: PublicRoutesSignupRoute,
+}
+
+const PublicRoutesRouteRouteWithChildren =
+  PublicRoutesRouteRoute._addFileChildren(PublicRoutesRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  DashboardRoute: DashboardRoute,
-  SigninRoute: SigninRoute,
-  SignupRoute: SignupRoute,
+  PrivateRoutesRouteRoute: PrivateRoutesRouteRouteWithChildren,
+  PublicRoutesRouteRoute: PublicRoutesRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

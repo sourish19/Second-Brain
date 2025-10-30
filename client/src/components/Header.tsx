@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+// import { useQueryClient } from '@tanstack/react-query';
+
+import { Menu, Share2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
 	NavigationMenu,
@@ -7,22 +10,42 @@ import {
 	NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ModeToggle } from '.';
+
 import { NavLinksConstants } from '@/constants/appConstants';
 import useHeaderScroll from '@/hooks/useHeaderScroll';
+import useGetUser from '@/hooks/useGetUser';
 
 const Header = () => {
 	const [open, setOpen] = useState(false);
+	// const queryClient = useQueryClient();
 
 	const scrolled = useHeaderScroll();
 
+	const { data, isLoading } = useGetUser();
+
+	// useEffect(() => {
+	// 	if (isError) {
+	// 		queryClient.invalidateQueries({ queryKey: ['user'] });
+	// 	}
+	// }, [isError]);
+
+	// useEffect(() => {
+	// 	console.log('Data -', data);
+
+	// 	if (data && data.success) {
+	// 		console.log('DATAAAAA Successfull --> ', data);
+	// 	}
+	// }, [data]);
+
 	return (
 		<header
-			className={`sticky top-0 z-50 w-full text-neutral-100  px-4 md:px-8 font-poppins ${scrolled ? 'backdrop-blur-md  border-b border-neutral-700' : 'bg-transparent'}  `}
+			className={`sticky top-0 z-50 w-full text-neutral-900 dark:text-neutral-100  px-4 md:px-8 font-poppins ${isLoading ? '' : data && 'border-b border-neutral-700'} ${scrolled ? 'backdrop-blur-md  border-b border-neutral-700' : 'bg-transparent'}  `}
 		>
 			<div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
 				{/* Left side */}
 
-				<div className="text-xl md:text-2xl  text-neutral-100 tracking-wide  bg-clip-textdrop-shadow-lg font-bitcount">
+				<div className="text-xl md:text-2xl  dark:text-neutral-100 tracking-wide  bg-clip-textdrop-shadow-lg font-bitcount">
 					SecondBrain
 				</div>
 
@@ -43,13 +66,36 @@ const Header = () => {
 				</NavigationMenu>
 
 				{/* Right side (buttons) */}
-				<div className="hidden  md:flex gap-3">
-					<Button className="cursor-pointer" variant="ghost" size="sm">
-						Sign In
-					</Button>
-					<Button className="cursor-pointer" size="sm">
-						Get Started
-					</Button>
+				<div className="hidden md:flex gap-3">
+					{isLoading ? null : (
+						<>
+							<Button className="cursor-pointer" variant="ghost" size="sm">
+								{data && data.success ? (
+									<p className="flex justify-center items-center gap-2">
+										<Share2 />
+										<span>Share Brain</span>
+									</p>
+								) : (
+									<Link to="/signin">
+										<>Signin</>
+									</Link>
+								)}
+							</Button>
+							<Button className="cursor-pointer" size="sm">
+								{data && data.success ? (
+									<p className="flex justify-center items-center gap-1">
+										<Plus />
+										<span>Add Content</span>
+									</p>
+								) : (
+									<Link to="/signup">
+										<>Get Started</>
+									</Link>
+								)}
+							</Button>
+							<ModeToggle />
+						</>
+					)}
 				</div>
 
 				{/* Mobile Menu Button */}
@@ -76,12 +122,37 @@ const Header = () => {
 								</button>
 							))}
 							<div className="border-t my-2"></div>
-							<Button variant="ghost" size="sm" className="w-full">
-								Sign In
-							</Button>
-							<Button size="sm" className="w-full">
-								Get Started
-							</Button>
+							<div className="flex flex-col justify-center gap-y-2">
+								{isLoading ? null : (
+									<>
+										<Button className="cursor-pointer" variant="ghost" size="sm">
+											{data && data.success ? (
+												<p className="flex justify-center items-center gap-2">
+													<Share2 />
+													<span>Share Brain</span>
+												</p>
+											) : (
+												<Link to="/signin">
+													<>Signin</>
+												</Link>
+											)}
+										</Button>
+										<Button className="cursor-pointer" size="sm">
+											{data && data.success ? (
+												<p className="flex justify-center items-center gap-1">
+													<Plus />
+													<span>Add Content</span>
+												</p>
+											) : (
+												<Link to="/signup">
+													<>Get Started</>
+												</Link>
+											)}
+										</Button>
+										<ModeToggle />
+									</>
+								)}
+							</div>
 						</PopoverContent>
 					</Popover>
 				</div>

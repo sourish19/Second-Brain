@@ -3,7 +3,7 @@ import { HeroConstants } from '@/constants/appConstants';
 const HeroSection = () => {
 	return (
 		// <div className="flex flex-col items-center justify-center w-full h-full">
-		<main className="mt-8 divide-y container mx-auto sm:border px-0 border-t border-b border-neutral-700">
+		<main className="mt-8 divide-y container mx-auto sm:border px-0 border-t border-b border-neutral-700 dark:text-neutral-100">
 			<div className="grid grid-cols-12 divide-x border-neutral-700">
 				{Array(12)
 					.fill(null)

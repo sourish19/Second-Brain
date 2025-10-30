@@ -11,10 +11,11 @@ export const cookieOptions: CookieOptions = {
 };
 
 export enum CONTENT_TYPES {
-  ARTICLE = 'article',
+  DOCUMENT = 'document',
   TWEET = 'tweet',
   YOUTUBE = 'youtube',
-  GITHUB = 'github',
+  VIDEOS = 'videos',
+  LINKS = 'link',
   OTHER = 'other',
 }
 

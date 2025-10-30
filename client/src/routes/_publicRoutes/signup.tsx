@@ -11,7 +11,7 @@ import type { TSignup } from '@/validations/authValidation';
 import { registerUser } from '@/api/auth';
 import type { TRegsisterResponse } from '@/validations/authValidation';
 
-export const Route = createFileRoute('/signup')({
+export const Route = createFileRoute('/_publicRoutes/signup')({
 	component: RouteComponent,
 });
 
@@ -48,7 +48,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="flex flex-col h-full pb-20 mt-10 md:mt-20 lg:mt-30 w-full justify-center items-center">
+		<div className="flex flex-col h-full pb-20 mt-5 md:mt-20 lg:mt-20 w-full justify-center items-center">
 			<AuthForm
 				title="Sign Up to your account"
 				description="Enter your email below to sign up to your account"
