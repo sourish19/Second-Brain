@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-// import { useQueryClient } from '@tanstack/react-query';
 
 import { Menu, Share2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,28 +14,16 @@ import { ModeToggle } from '.';
 import { NavLinksConstants } from '@/constants/appConstants';
 import useHeaderScroll from '@/hooks/useHeaderScroll';
 import useGetUser from '@/hooks/useGetUser';
+import useScrollToHashSection from '@/hooks/useScrollToHashSection';
 
 const Header = () => {
 	const [open, setOpen] = useState(false);
-	// const queryClient = useQueryClient();
 
 	const scrolled = useHeaderScroll();
 
 	const { data, isLoading } = useGetUser();
 
-	// useEffect(() => {
-	// 	if (isError) {
-	// 		queryClient.invalidateQueries({ queryKey: ['user'] });
-	// 	}
-	// }, [isError]);
-
-	// useEffect(() => {
-	// 	console.log('Data -', data);
-
-	// 	if (data && data.success) {
-	// 		console.log('DATAAAAA Successfull --> ', data);
-	// 	}
-	// }, [data]);
+	useScrollToHashSection();
 
 	return (
 		<header
@@ -52,13 +39,13 @@ const Header = () => {
 				{/* Desktop Nav */}
 				<NavigationMenu className="hidden cursor-pointer md:flex">
 					<NavigationMenuList className="flex gap-4">
-						{NavLinksConstants.map((link, i) => (
+						{NavLinksConstants.map((nav, i) => (
 							<NavigationMenuItem key={i}>
 								<button
 									type="button"
 									className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer  hover:bg-accent hover:text-accent-foreground transition"
 								>
-									{link}
+									<Link to={nav.navPath}>{nav.navName}</Link>
 								</button>
 							</NavigationMenuItem>
 						))}
@@ -67,35 +54,37 @@ const Header = () => {
 
 				{/* Right side (buttons) */}
 				<div className="hidden md:flex gap-3">
-					{isLoading ? null : (
-						<>
-							<Button className="cursor-pointer" variant="ghost" size="sm">
-								{data && data.success ? (
-									<p className="flex justify-center items-center gap-2">
-										<Share2 />
-										<span>Share Brain</span>
-									</p>
-								) : (
-									<Link to="/signin">
-										<>Signin</>
-									</Link>
-								)}
-							</Button>
-							<Button className="cursor-pointer" size="sm">
-								{data && data.success ? (
-									<p className="flex justify-center items-center gap-1">
-										<Plus />
-										<span>Add Content</span>
-									</p>
-								) : (
-									<Link to="/signup">
-										<>Get Started</>
-									</Link>
-								)}
-							</Button>
-							<ModeToggle />
-						</>
-					)}
+					<>
+						{isLoading ? null : (
+							<div>
+								<Button className="cursor-pointer" variant="ghost" size="sm">
+									{data && data.success ? (
+										<p className="flex justify-center items-center gap-2">
+											<Share2 />
+											<span>Share Brain</span>
+										</p>
+									) : (
+										<Link to="/signin">
+											<>Signin</>
+										</Link>
+									)}
+								</Button>
+								<Button className="cursor-pointer" size="sm">
+									{data && data.success ? (
+										<p className="flex justify-center items-center gap-1">
+											<Plus />
+											<span>Add Content</span>
+										</p>
+									) : (
+										<Link to="/signup">
+											<>Get Started</>
+										</Link>
+									)}
+								</Button>
+							</div>
+						)}
+						<ModeToggle />
+					</>
 				</div>
 
 				{/* Mobile Menu Button */}
@@ -112,13 +101,13 @@ const Header = () => {
 							</Button>
 						</PopoverTrigger>
 						<PopoverContent align="end" className="mt-2 w-48 p-2  flex flex-col gap-1">
-							{NavLinksConstants.map((link, i) => (
+							{NavLinksConstants.map((nav, i) => (
 								<button
 									type="button"
 									key={i}
 									className="w-full rounded-md px-3 py-2 text-left text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground transition"
 								>
-									{link}
+									<Link to={nav.navPath}>{nav.navName}</Link>
 								</button>
 							))}
 							<div className="border-t my-2"></div>

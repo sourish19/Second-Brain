@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -20,6 +22,7 @@ const AuthForm = <TResponse, TVariables>({
 	fields,
 	type,
 	action,
+	navigate,
 	form: formApi,
 	mutation,
 }: AuthFormProps<TResponse, TVariables>) => {
@@ -30,7 +33,7 @@ const AuthForm = <TResponse, TVariables>({
 				<CardDescription className="text-xs sm:text-sm">{description}</CardDescription>
 				<CardAction>
 					<Button variant="link" className="text-xs sm:text-sm px-0">
-						{action}
+						<Link to={navigate}>{action}</Link>
 					</Button>
 				</CardAction>
 			</CardHeader>

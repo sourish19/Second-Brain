@@ -2,7 +2,7 @@ import { FeaturesConstants } from '@/constants/appConstants';
 
 const Feature = () => {
 	return (
-		<section className="py-25 mx-auto max-w-7xl">
+		<section id="features" className="py-25 mx-auto max-w-7xl">
 			<div className="container">
 				{/* Features Heading*/}
 				<div className="mb-24 flex flex-col items-center gap-6">

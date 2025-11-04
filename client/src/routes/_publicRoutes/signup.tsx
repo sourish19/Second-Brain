@@ -55,6 +55,7 @@ function RouteComponent() {
 				fields={['Name', 'Email', 'Password']}
 				type="Sign Up"
 				action="Sign In"
+				navigate="/signin"
 				form={form}
 				mutation={mutation}
 			/>

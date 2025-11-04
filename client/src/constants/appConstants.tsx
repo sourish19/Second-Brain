@@ -5,7 +5,24 @@ import type { ReactFormExtendedApi } from '@tanstack/react-form';
 import type { UseMutationResult } from '@tanstack/react-query';
 // import type { TRegsisterResponse, TLoginResponse, TSignin, TSignup } from '@/validations/authValidation';
 
-export const NavLinksConstants = ['Home', 'Features', 'Pricing', 'Dashboard'];
+export const NavLinksConstants = [
+	{
+		navPath: '/',
+		navName: 'Home',
+	},
+	{
+		navPath: '/#features',
+		navName: 'Features',
+	},
+	{
+		navPath: '/#pricing',
+		navName: 'Pricing',
+	},
+	{
+		navPath: '/dashboard',
+		navName: 'Dashboard',
+	},
+];
 
 export const HeroConstants = {
 	title: 'Your Second Brain for the Web',
@@ -209,6 +226,7 @@ const AuthFormSchema = z.object({
 	description: z.string(),
 	fields: z.array(FieldEnum),
 	type: TypeEnum,
+	navigate: z.string(),
 	action: z.string(),
 });
 
