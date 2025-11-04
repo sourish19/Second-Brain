@@ -4,9 +4,9 @@ export const ContentItemSchema = z.strictObject({
 	id: z.string(),
 	title: z.string(),
 	type: z.string(),
-	link: z.string().url(),
+	link: z.string(),
 	tags: z.array(z.string()),
-	image: z.string().url(),
+	image: z.string(),
 });
 
 export const GetContentsResponseSchema = z.strictObject({

@@ -7,5 +7,17 @@ import AuthForm from './AuthForm';
 import ModeToggle from './MoodToggle';
 import SidebarNav from './SidebarNav';
 import Contents from './Contents';
+import CardContents from './CardContents';
 
-export { Header, Logo, HeroSection, Feature, Footer, AuthForm, ModeToggle, SidebarNav, Contents };
+export {
+	Header,
+	Logo,
+	HeroSection,
+	Feature,
+	Footer,
+	AuthForm,
+	ModeToggle,
+	SidebarNav,
+	Contents,
+	CardContents,
+};

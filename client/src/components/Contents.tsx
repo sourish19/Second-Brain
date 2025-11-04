@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { userStore } from '@/store/store';
 import { getContents } from '@/api/contents';
+import { CardContents } from '.';
 
 const Contents = () => {
-	const { isPending, isError, data, error } = useQuery({
+	const { isLoading, isError, data, error } = useQuery({
 		queryKey: ['contents'],
 		queryFn: getContents,
 	});
@@ -14,7 +15,7 @@ const Contents = () => {
 
 	// useEffect(() => {}, [sideNavigationType]);
 
-	if (isPending) {
+	if (isLoading) {
 		return <span>Loading...</span>;
 	}
 
@@ -22,7 +23,13 @@ const Contents = () => {
 		return <span>Error: {error.message}</span>;
 	}
 
-	return <div className="flex-1 ml-15 md:ml-40 p-4 h-screen">{sideNavigationType}</div>;
+	if (data && typeof data === 'object') {
+		return (
+			<div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
+				<CardContents data={data.data} />
+			</div>
+		);
+	}
 };
 
 export default Contents;
