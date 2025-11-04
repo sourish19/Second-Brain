@@ -102,7 +102,7 @@ export const getUser = async (): Promise<TGetUserResponse | undefined> => {
 
 export const logoutUser = async (): Promise<TLogoutUserResponse | string> => {
 	try {
-		const res = await axiosInstance.post<TLogoutUserResponse>('/users/register');
+		const res = await axiosInstance.post<TLogoutUserResponse>('/users/logout');
 		const validData = LogoutUserSchema.parse(res.data);
 		return validData;
 	} catch (error) {

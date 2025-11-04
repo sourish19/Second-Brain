@@ -3,7 +3,6 @@ import { Link2, Tags, FileText, Share2, Search, Smartphone } from 'lucide-react'
 import { z } from 'zod';
 import type { ReactFormExtendedApi } from '@tanstack/react-form';
 import type { UseMutationResult } from '@tanstack/react-query';
-// import type { TRegsisterResponse, TLoginResponse, TSignin, TSignup } from '@/validations/authValidation';
 
 export const NavLinksConstants = [
 	{
