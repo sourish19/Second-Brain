@@ -24,8 +24,8 @@ const SidebarNav = () => {
 			if (typeof data === 'object') toast.success(data.message);
 			navigate({ to: '/' });
 		},
-		onError: (error: any) => {
-			toast.error(error.message);
+		onError: (error) => {
+			error instanceof Error && toast.error(error.message);
 		},
 	});
 

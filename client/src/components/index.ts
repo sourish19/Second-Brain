@@ -9,6 +9,7 @@ import SidebarNav from './SidebarNav';
 import Contents from './Contents';
 import CardContents from './CardContents';
 import Shimmer from './Shimmer';
+import ErrorFallback from './ErrorFallback';
 
 export {
 	Header,
@@ -21,5 +22,6 @@ export {
 	SidebarNav,
 	Contents,
 	CardContents,
-	Shimmer
+	Shimmer,
+	ErrorFallback,
 };

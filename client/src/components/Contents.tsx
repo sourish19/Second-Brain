@@ -1,11 +1,9 @@
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { Spinner } from './ui/spinner';
-import {Shimmer} from '.'
+import { Shimmer, ErrorFallback } from '.';
 
-
-import { userStore } from '@/store/store';
+// import { userStore } from '@/store/store';
 import { getContents } from '@/api/contents';
 import { CardContents } from '.';
 
@@ -15,19 +13,25 @@ const Contents = () => {
 		queryFn: getContents,
 	});
 
-	const sideNavigationType = userStore((state) => state.sideNavigationType);
+	// const sideNavigationType = userStore((state) => state.sideNavigationType);
 
 	// useEffect(() => {}, [sideNavigationType]);
 
 	if (isLoading) {
-			return <div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
-				{/* <span className='ml-50 text-red-500 mt-50'>Hello</span> */}
-					<Shimmer />
+		return (
+			<div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
+				<Shimmer />
 			</div>
+		);
 	}
 
 	if (isError) {
-		return <span>Error: {error.message}</span>;
+		if (error instanceof Error)
+			return (
+				<div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
+					<ErrorFallback message={error.message}/>
+				</div>
+			);
 	}
 
 	if (data && typeof data === 'object') {
