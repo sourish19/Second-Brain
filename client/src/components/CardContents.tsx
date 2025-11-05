@@ -13,7 +13,7 @@ const CardContents = ({ data }: CardContentsProps) => {
 	return (
 		<div className="flex flex-wrap gap-4">
 			{data.map((item) => (
-				<Card key={item.id} className="w-[320px] rounded-2xl shadow-sm hover:shadow-md transition">
+				<Card key={item.id} className="w-[300px] rounded-2xl shadow-sm hover:shadow-md transition">
 					<CardHeader className="flex justify-between items-start">
 						<div className="flex items-center gap-2">
 							<FileText className="w-4 h-4 text-muted-foreground" />

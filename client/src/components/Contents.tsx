@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import { Spinner } from './ui/spinner';
+import {Shimmer} from '.'
+
+
 import { userStore } from '@/store/store';
 import { getContents } from '@/api/contents';
 import { CardContents } from '.';
@@ -16,7 +20,10 @@ const Contents = () => {
 	// useEffect(() => {}, [sideNavigationType]);
 
 	if (isLoading) {
-		return <span>Loading...</span>;
+			return <div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
+				{/* <span className='ml-50 text-red-500 mt-50'>Hello</span> */}
+					<Shimmer />
+			</div>
 	}
 
 	if (isError) {

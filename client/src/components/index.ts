@@ -8,6 +8,7 @@ import ModeToggle from './MoodToggle';
 import SidebarNav from './SidebarNav';
 import Contents from './Contents';
 import CardContents from './CardContents';
+import Shimmer from './Shimmer';
 
 export {
 	Header,
@@ -20,4 +21,5 @@ export {
 	SidebarNav,
 	Contents,
 	CardContents,
+	Shimmer
 };
