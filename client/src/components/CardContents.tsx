@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 // import { Button } from '@/components/ui/button';
@@ -28,17 +30,22 @@ const CardContents = ({ data }: CardContentsProps) => {
 					</CardHeader>
 
 					<CardContent>
-						<CardTitle className="text-lg font-semibold mb-3">{item.title}</CardTitle>
+						<Link to={item.link} target="blank">
+							{' '}
+							<CardTitle className="text-lg font-semibold mb-3">{item.title}</CardTitle>
+						</Link>
 
-						{/* Fixed Image Container */}
-						<div className="w-full h-40 bg-muted rounded-md overflow-hidden mb-4">
-							<img
-								src={item.image}
-								alt={item.title}
-								className="w-full h-full object-cover"
-								loading="lazy"
-							/>
-						</div>
+						{/* Image container */}
+						<Link to={item.link} target="blank">
+							<div className="w-full h-40 bg-muted rounded-md overflow-hidden mb-4">
+								<img
+									src={item.image}
+									alt={item.title}
+									className="w-full h-full object-cover"
+									loading="lazy"
+								/>
+							</div>
+						</Link>
 
 						{/* Tags */}
 						<div className="flex flex-wrap gap-2 mb-2">

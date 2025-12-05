@@ -23,6 +23,21 @@ export const AddContentResponseSchema = z.strictObject({
 	data: ContentItemSchema,
 });
 
+export const AddContentSchema = z.object({
+  title: z
+    .string(),
+  link: z
+    .string()
+    .url("Link must be a valid URL"),
+  type: z
+    .string()
+    .min(1, "Type is required"),
+  tags: z
+    .array(z.string())
+
+});
+
 export type ContentItem = z.infer<typeof ContentItemSchema>;
 export type GetContentsResponse = z.infer<typeof GetContentsResponseSchema>;
 export type AddContentResponse = z.infer<typeof AddContentResponseSchema>;
+export type AddContentValues = z.infer<typeof AddContentSchema>;

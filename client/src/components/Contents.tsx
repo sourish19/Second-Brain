@@ -29,7 +29,7 @@ const Contents = () => {
 		if (error instanceof Error)
 			return (
 				<div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
-					<ErrorFallback message={error.message}/>
+					<ErrorFallback message={error.message} />
 				</div>
 			);
 	}

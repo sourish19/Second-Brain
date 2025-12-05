@@ -237,3 +237,26 @@ export type AuthFormProps<TResponse, TVariables> = AuthFormSchemaType & {
 };
 
 export type TSideNavbarTypes = z.infer<typeof SideNavbarTypesSchema>;
+
+export const AddContentConstents = [
+	{
+		label: 'title',
+		labelId: 'sheet-label',
+		defaultValue: ''
+	},
+	{
+		label: 'link',
+		labelId: 'sheet-link',
+		defaultValue: ''
+	},
+	{
+		label: 'type',
+		labelId: 'sheet-type',
+		defaultValue: ''
+	},
+	{
+		label: 'tags',
+		labelId: 'sheet-tags',
+		defaultValue: ''
+	},
+]

@@ -9,7 +9,7 @@ import {
 	NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ModeToggle } from '.';
+import { ModeToggle, AddContent } from '.';
 
 import { NavLinksConstants } from '@/constants/appConstants';
 import useHeaderScroll from '@/hooks/useHeaderScroll';
@@ -57,30 +57,34 @@ const Header = () => {
 					<>
 						{isLoading ? null : (
 							<div>
-								<Button className="cursor-pointer" variant="ghost" size="sm">
-									{data && data.success ? (
+								{data && data.success ? (
+									<Button className="cursor-pointer" variant="ghost" size="sm">
 										<p className="flex justify-center items-center gap-2">
 											<Share2 />
 											<span>Share Brain</span>
 										</p>
-									) : (
+									</Button>
+								) : (
+									<Button className="cursor-pointer" variant="ghost" size="sm">
 										<Link to="/signin">
 											<>Signin</>
 										</Link>
-									)}
-								</Button>
-								<Button className="cursor-pointer" size="sm">
-									{data && data.success ? (
-										<p className="flex justify-center items-center gap-1">
-											<Plus />
-											<span>Add Content</span>
-										</p>
-									) : (
+									</Button>
+								)}
+								{data && data.success ? (
+									// <Button className="cursor-pointer" size="sm">
+										// <p className="flex justify-center items-center gap-1">
+											// <Plus />
+											<AddContent text='Add Content' title='Add Content'/>
+										// </p>
+									// </Button>
+								) : (
+									<Button className="cursor-pointer" size="sm">
 										<Link to="/signup">
 											<>Get Started</>
 										</Link>
-									)}
-								</Button>
+									</Button>
+								)}
 							</div>
 						)}
 						<ModeToggle />
@@ -126,18 +130,23 @@ const Header = () => {
 												</Link>
 											)}
 										</Button>
-										<Button className="cursor-pointer" size="sm">
 											{data && data.success ? (
+										<Button className="cursor-pointer" size="sm">
+
 												<p className="flex justify-center items-center gap-1">
 													<Plus />
 													<span>Add Content</span>
 												</p>
+										</Button>
+
 											) : (
+										<Button className="cursor-pointer" size="sm">
+
 												<Link to="/signup">
 													<>Get Started</>
 												</Link>
-											)}
 										</Button>
+											)}
 										<ModeToggle />
 									</>
 								)}

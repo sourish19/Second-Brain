@@ -10,6 +10,7 @@ import Contents from './Contents';
 import CardContents from './CardContents';
 import Shimmer from './Shimmer';
 import ErrorFallback from './ErrorFallback';
+import AddContent from './AddContent';
 
 export {
 	Header,
@@ -24,4 +25,5 @@ export {
 	CardContents,
 	Shimmer,
 	ErrorFallback,
+	AddContent,
 };
