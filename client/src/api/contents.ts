@@ -1,6 +1,10 @@
 import { AxiosError } from 'axios';
 import { ZodError } from 'zod';
-import type { AddContentResponse, GetContentsResponse } from '@/validations/contentValidation';
+import type {
+	AddContentResponse,
+	GetContentsResponse,
+	AddContentValues,
+} from '@/validations/contentValidation';
 import {
 	AddContentResponseSchema,
 	GetContentsResponseSchema,
@@ -36,7 +40,7 @@ export const getContents = async (): Promise<GetContentsResponse | string> => {
 	}
 };
 
-export const addContent = async (): Promise<AddContentResponse | string> => {
+export const addContent = async (data: AddContentValues): Promise<AddContentResponse | string> => {
 	try {
 		const res = await axiosInstance.get<AddContentResponse>('/get-contents');
 		const validData = AddContentResponseSchema.parse(res.data);

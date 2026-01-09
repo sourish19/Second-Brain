@@ -24,10 +24,10 @@ export const AddContentResponseSchema = z.strictObject({
 });
 
 export const AddContentSchema = z.object({
-	title: z.string(),
+	title: z.string().min(1, 'Title is required'),
 	link: z.string().url('Link must be a valid URL'),
 	type: z.string().min(1, 'Type is required'),
-	tags: z.array(z.string()),
+	tags: z.array(z.string()).catch([]),
 });
 
 export type ContentItem = z.infer<typeof ContentItemSchema>;
