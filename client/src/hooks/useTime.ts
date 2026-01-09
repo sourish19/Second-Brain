@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const useTime = () => {
 	const [time, setTime] = useState(new Date().toLocaleTimeString());

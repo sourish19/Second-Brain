@@ -1,13 +1,11 @@
 import { AxiosError } from 'axios';
 import { ZodError } from 'zod';
-
-import { axiosInstance } from './axios';
-
-import type { GetContentsResponse, AddContentResponse } from '@/validations/contentValidation';
+import type { AddContentResponse, GetContentsResponse } from '@/validations/contentValidation';
 import {
 	AddContentResponseSchema,
 	GetContentsResponseSchema,
 } from '@/validations/contentValidation';
+import { axiosInstance } from './axios';
 
 export const getContents = async (): Promise<GetContentsResponse | string> => {
 	try {

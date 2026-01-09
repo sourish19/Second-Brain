@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { HeroSection, Feature, Footer } from '@/components';
+import { Feature, Footer, HeroSection } from '@/components';
 import AppLayout from '@/layouts/AppLayout';
 
 export const Route = createFileRoute('/')({

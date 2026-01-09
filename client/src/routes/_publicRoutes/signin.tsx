@@ -1,15 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-
-import { AuthForm } from '@/components';
-import { SigninValidationSchema } from '@/validations/authValidation';
-import type { TSignin } from '@/validations/authValidation';
-import { loginUser } from '@/api/auth';
-import type { TLoginResponse } from '@/validations/authValidation';
-
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { loginUser } from '@/api/auth';
+import { AuthForm } from '@/components';
+import type { TLoginResponse, TSignin } from '@/validations/authValidation';
+import { SigninValidationSchema } from '@/validations/authValidation';
 
 export const Route = createFileRoute('/_publicRoutes/signin')({
 	component: RouteComponent,

@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-
-import { Button } from './ui/button';
-import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
-
+import { toast } from 'sonner';
+import { logoutUser } from '@/api/auth';
+import type { TSideNavbarTypes } from '@/constants/appConstants';
 import { SidebarNavbarContents } from '@/constants/appConstants';
 import { setSideNavigationType } from '@/store/store';
-import type { TSideNavbarTypes } from '@/constants/appConstants';
-import { logoutUser } from '@/api/auth';
+import { Button } from './ui/button';
 
 const SidebarNav = () => {
 	const navigate = useNavigate({ from: '/dashboard' });

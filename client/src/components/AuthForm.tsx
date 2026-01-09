@@ -10,8 +10,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { FieldGroup, Field, FieldLabel, FieldSet, FieldError } from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
 
 import type { AuthFormProps } from '@/constants/appConstants';

@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-
-import { Menu, Share2, Plus } from 'lucide-react';
+import { Menu, Plus, Share2 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
 	NavigationMenu,
@@ -9,12 +8,11 @@ import {
 	NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ModeToggle, AddContent } from '.';
-
 import { NavLinksConstants } from '@/constants/appConstants';
-import useHeaderScroll from '@/hooks/useHeaderScroll';
 import useGetUser from '@/hooks/useGetUser';
+import useHeaderScroll from '@/hooks/useHeaderScroll';
 import useScrollToHashSection from '@/hooks/useScrollToHashSection';
+import { AddContent, ModeToggle } from '.';
 
 const Header = () => {
 	const [open, setOpen] = useState(false);
@@ -39,8 +37,8 @@ const Header = () => {
 				{/* Desktop Nav */}
 				<NavigationMenu className="hidden cursor-pointer md:flex">
 					<NavigationMenuList className="flex gap-4">
-						{NavLinksConstants.map((nav, i) => (
-							<NavigationMenuItem key={i}>
+						{NavLinksConstants.map((nav, index) => (
+							<NavigationMenuItem key={index}>
 								<button
 									type="button"
 									className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer  hover:bg-accent hover:text-accent-foreground transition"
@@ -54,41 +52,39 @@ const Header = () => {
 
 				{/* Right side (buttons) */}
 				<div className="hidden md:flex gap-3">
-					<>
-						{isLoading ? null : (
-							<div>
-								{data && data.success ? (
-									<Button className="cursor-pointer" variant="ghost" size="sm">
-										<p className="flex justify-center items-center gap-2">
-											<Share2 />
-											<span>Share Brain</span>
-										</p>
-									</Button>
-								) : (
-									<Button className="cursor-pointer" variant="ghost" size="sm">
-										<Link to="/signin">
-											<>Signin</>
-										</Link>
-									</Button>
-								)}
-								{data && data.success ? (
-									// <Button className="cursor-pointer" size="sm">
-										// <p className="flex justify-center items-center gap-1">
-											// <Plus />
-											<AddContent text='Add Content' title='Add Content'/>
-										// </p>
-									// </Button>
-								) : (
-									<Button className="cursor-pointer" size="sm">
-										<Link to="/signup">
-											<>Get Started</>
-										</Link>
-									</Button>
-								)}
-							</div>
-						)}
-						<ModeToggle />
-					</>
+					{isLoading ? null : (
+						<div>
+							{data?.success ? (
+								<Button className="cursor-pointer" variant="ghost" size="sm">
+									<p className="flex justify-center items-center gap-2">
+										<Share2 />
+										<span>Share Brain</span>
+									</p>
+								</Button>
+							) : (
+								<Button className="cursor-pointer" variant="ghost" size="sm">
+									<Link to="/signin">
+										<>Signin</>
+									</Link>
+								</Button>
+							)}
+							{data?.success ? (
+								// <Button className="cursor-pointer" size="sm">
+								// <p className="flex justify-center items-center gap-1">
+								// <Plus />
+								<AddContent />
+								// </p>
+								// </Button>
+							) : (
+								<Button className="cursor-pointer" size="sm">
+									<Link to="/signup">
+										<>Get Started</>
+									</Link>
+								</Button>
+							)}
+						</div>
+					)}
+					<ModeToggle />
 				</div>
 
 				{/* Mobile Menu Button */}
@@ -105,10 +101,10 @@ const Header = () => {
 							</Button>
 						</PopoverTrigger>
 						<PopoverContent align="end" className="mt-2 w-48 p-2  flex flex-col gap-1">
-							{NavLinksConstants.map((nav, i) => (
+							{NavLinksConstants.map((nav, index) => (
 								<button
 									type="button"
-									key={i}
+									key={index}
 									className="w-full rounded-md px-3 py-2 text-left text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground transition"
 								>
 									<Link to={nav.navPath}>{nav.navName}</Link>
@@ -119,7 +115,7 @@ const Header = () => {
 								{isLoading ? null : (
 									<>
 										<Button className="cursor-pointer" variant="ghost" size="sm">
-											{data && data.success ? (
+											{data?.success ? (
 												<p className="flex justify-center items-center gap-2">
 													<Share2 />
 													<span>Share Brain</span>
@@ -130,23 +126,20 @@ const Header = () => {
 												</Link>
 											)}
 										</Button>
-											{data && data.success ? (
-										<Button className="cursor-pointer" size="sm">
-
+										{data?.success ? (
+											<Button className="cursor-pointer" size="sm">
 												<p className="flex justify-center items-center gap-1">
 													<Plus />
 													<span>Add Content</span>
 												</p>
-										</Button>
-
-											) : (
-										<Button className="cursor-pointer" size="sm">
-
+											</Button>
+										) : (
+											<Button className="cursor-pointer" size="sm">
 												<Link to="/signup">
 													<>Get Started</>
 												</Link>
-										</Button>
-											)}
+											</Button>
+										)}
 										<ModeToggle />
 									</>
 								)}

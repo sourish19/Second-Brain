@@ -1,12 +1,10 @@
-import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-
-import { Spinner } from '@/components/ui/spinner';
+import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
-
-import useGetUser from '@/hooks/useGetUser';
 import { Header } from '@/components';
+import { Spinner } from '@/components/ui/spinner';
+import useGetUser from '@/hooks/useGetUser';
 
 type Prop = {
 	children: React.ReactElement | React.ReactElement[];

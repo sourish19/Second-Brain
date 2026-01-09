@@ -1,9 +1,8 @@
 import { Link } from '@tanstack/react-router';
-
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 // import { Button } from '@/components/ui/button';
 import { FileText, Share2, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import type { ContentItem } from '@/validations/contentValidation';
 

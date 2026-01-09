@@ -1,10 +1,11 @@
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
 import {
 	Sheet,
 	SheetClose,
@@ -15,28 +16,27 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
-import { toast } from 'sonner';
-
-import { AddContentSchema } from '@/validations/contentValidation';
 import type { AddContentValues } from '@/validations/contentValidation';
 
-const AddContent = ({title,link,type,tags}: AddContentValues) => {
+import { AddContentSchema } from '@/validations/contentValidation';
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from '@/components/ui/field';
 
+const AddContent = () => {
 	const form = useForm({
-		defaultValues:{
+		defaultValues: {
 			title: '',
 			link: '',
 			type: '',
 			tags: [] as string[],
 		},
-		validators:{
-			onSubmit: AddContentSchema
+		validators: {
+			onSubmit: AddContentSchema,
 		},
 		onSubmit: ({ value }) => {
 			console.log('Form data:', value);
 			// mutation.mutate(value);
 		},
-	})
+	});
 
 	return (
 		<Sheet>
@@ -51,25 +51,71 @@ const AddContent = ({title,link,type,tags}: AddContentValues) => {
 					</SheetDescription>
 				</SheetHeader>
 
-		
+				<form
+					id="add-content-form"
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<FieldSet>
+						<FieldGroup>
+							// This is for Title Field 
+							<form.Field
+								name="title"
+								children={(field) => {
+									const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Title</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												aria-invalid={isInvalid}
+												placeholder="Login button not working on mobile"
+												autoComplete="off"
+											/>
+											{isInvalid && <FieldError errors={field.state.meta.errors} />}
+										</Field>
+									);
+								}}
+							></form.Field>
+							// This is for link
+							<form.Field
+								name="link"
+								children={(field) => {
+									const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+									return (
+										<Field data-invalid={isInvalid}>
+											<FieldLabel htmlFor={field.name}>Title</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												aria-invalid={isInvalid}
+												placeholder="Login button not working on mobile"
+												autoComplete="off"
+											/>
+											{isInvalid && <FieldError errors={field.state.meta.errors} />}
+										</Field>
+									);
+								}}
+							></form.Field>
+						</FieldGroup>
+					</FieldSet>
 
-
-				{/* <div className="grid flex-1 auto-rows-min gap-6 px-4">
-					<div className="grid gap-3">
-						<Label htmlFor="sheet-demo-name">Name</Label>
-						<Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-					</div>
-					<div className="grid gap-3">
-						<Label htmlFor="sheet-demo-username">Username</Label>
-						<Input id="sheet-demo-username" defaultValue="@peduarte" />
-					</div>
-				</div> */}
-				<SheetFooter>
-					<Button type="submit">Save changes</Button>
-					<SheetClose asChild>
-						<Button variant="outline">Close</Button>
-					</SheetClose>
-				</SheetFooter>
+					<SheetFooter>
+						<Button type="submit">Save changes</Button>
+						<SheetClose asChild>
+							<Button variant="outline">Close</Button>
+						</SheetClose>
+					</SheetFooter>
+				</form>
 			</SheetContent>
 		</Sheet>
 	);

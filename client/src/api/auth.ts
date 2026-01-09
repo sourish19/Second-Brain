@@ -1,17 +1,15 @@
 import { AxiosError } from 'axios';
 import { ZodError } from 'zod';
-
-import { axiosInstance } from './axios';
-
 import type {
+	TGetUserResponse,
+	TLoginResponse,
+	TLogoutUserResponse,
+	TRegsisterResponse,
 	TSignin,
 	TSignup,
-	TLoginResponse,
-	TRegsisterResponse,
-	TGetUserResponse,
-	TLogoutUserResponse,
 } from '@/validations/authValidation';
 import { AuthResponseSchema, LogoutUserSchema } from '@/validations/authValidation';
+import { axiosInstance } from './axios';
 
 export const loginUser = async (data: TSignin): Promise<TLoginResponse | string> => {
 	try {

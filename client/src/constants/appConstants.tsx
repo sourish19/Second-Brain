@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link2, Tags, FileText, Share2, Search, Smartphone } from 'lucide-react';
-import { z } from 'zod';
 import type { ReactFormExtendedApi } from '@tanstack/react-form';
 import type { UseMutationResult } from '@tanstack/react-query';
+import { FileText, Link2, Search, Share2, Smartphone, Tags } from 'lucide-react';
+import type React from 'react';
+import { z } from 'zod';
 
 export const NavLinksConstants = [
 	{
@@ -242,21 +242,21 @@ export const AddContentConstents = [
 	{
 		label: 'title',
 		labelId: 'sheet-label',
-		defaultValue: ''
+		defaultValue: '',
 	},
 	{
 		label: 'link',
 		labelId: 'sheet-link',
-		defaultValue: ''
+		defaultValue: '',
 	},
 	{
 		label: 'type',
 		labelId: 'sheet-type',
-		defaultValue: ''
+		defaultValue: '',
 	},
 	{
 		label: 'tags',
 		labelId: 'sheet-tags',
-		defaultValue: ''
+		defaultValue: '',
 	},
-]
+];

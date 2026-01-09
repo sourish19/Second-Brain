@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { TAuthenticatedUser } from '@/validations/authValidation';
 import type { TSideNavbarTypes } from '@/constants/appConstants';
+import type { TAuthenticatedUser } from '@/validations/authValidation';
 
 interface UserStore {
 	user: TAuthenticatedUser;
