@@ -12,6 +12,7 @@ dist/
 notes.md
 
 request.http 
+biome.json
 
 # LOGS
 logs

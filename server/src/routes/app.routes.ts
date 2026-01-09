@@ -41,7 +41,7 @@ router
 router
   .route('/users/getme')
   .get(authLimiter, isLoggedIn, getUser);
-router.route('/users/logout').post(logoutUser);
+router.route('/users/logout').post(isLoggedIn,logoutUser);
 router.route('/users/google/callback').get(handleGoogleAuthLogin);
 
 // Contents

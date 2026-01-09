@@ -24,7 +24,7 @@ export const AddContentResponseSchema = z.strictObject({
 });
 
 export const AddContentSchema = z.object({
-	title: z.string().min(1, 'Title is required'),
+	title: z.string().min(4, 'Title must be at least 4 characters'),
 	link: z.string().url('Link must be a valid URL'),
 	type: z.string().min(1, 'Type is required'),
 	tags: z.array(z.string()).catch([]),

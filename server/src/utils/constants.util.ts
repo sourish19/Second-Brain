@@ -13,9 +13,8 @@ export const cookieOptions: CookieOptions = {
 export enum CONTENT_TYPES {
   DOCUMENT = 'document',
   TWEET = 'tweet',
-  YOUTUBE = 'youtube',
-  VIDEOS = 'videos',
-  LINKS = 'link',
+  VIDEO = 'video',
+  LINK = 'link',
   OTHER = 'other',
 }
 

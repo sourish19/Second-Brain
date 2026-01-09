@@ -1,9 +1,10 @@
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 
 import {
 	Sheet,
@@ -27,8 +28,24 @@ import {
 
 import type { AddContentValues } from '@/validations/contentValidation';
 import { AddContentSchema } from '@/validations/contentValidation';
+import { addContent } from '@/api/contents';
 
 const AddContent = () => {
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: async (formData: AddContentValues) => {
+			const data = await addContent(formData);
+
+			if (data instanceof Object) {
+				queryClient.invalidateQueries({ queryKey: ['contents'] });
+				toast.success(data.message);
+			} else {
+				toast.error(data);
+			}
+			return data;
+		},
+	});
 	const form = useForm({
 		defaultValues: {
 			title: '',
@@ -41,7 +58,7 @@ const AddContent = () => {
 		},
 		onSubmit: ({ value }) => {
 			console.log('Form data:', value);
-			// mutation.mutate(value);
+			mutation.mutate(value);
 		},
 	});
 
@@ -197,7 +214,9 @@ const AddContent = () => {
 					</FieldSet>
 
 					<SheetFooter>
-						<Button type="submit">Save changes</Button>
+						<Button type="submit">
+							{mutation.isPending ? <Spinner /> : 'Save'}
+						</Button>
 						<SheetClose asChild>
 							<Button variant="outline">Close</Button>
 						</SheetClose>

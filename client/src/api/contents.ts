@@ -42,7 +42,7 @@ export const getContents = async (): Promise<GetContentsResponse | string> => {
 
 export const addContent = async (data: AddContentValues): Promise<AddContentResponse | string> => {
 	try {
-		const res = await axiosInstance.get<AddContentResponse>('/get-contents');
+		const res = await axiosInstance.post<AddContentResponse>('/add-content', data);
 		const validData = AddContentResponseSchema.parse(res.data);
 		return validData;
 	} catch (error) {
