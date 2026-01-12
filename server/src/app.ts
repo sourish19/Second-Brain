@@ -1,7 +1,7 @@
 import express, { json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import PinoHttp from 'pino-http';
+import passport from 'passport';
 
 import router from './routes/app.routes';
 import errorHandler from './middlewares/error.middleware';
@@ -21,6 +21,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
+app.use(passport.initialize())
 
 app.use(globalLimiter);
 

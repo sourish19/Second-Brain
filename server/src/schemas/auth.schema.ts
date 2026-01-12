@@ -1,12 +1,14 @@
 import mongoose, { Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+
 import logger from '../config/logger.config';
+import { LOGIN_TYPES, AVAILABLE_LOGIN_TYPES } from '../utils/constants.util';
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  loginTypes?: string;
+  loginType?: string;
   // isModified(path: string):boolean  Its already there in the Document
 }
 
@@ -32,6 +34,8 @@ const userSchema = new mongoose.Schema(
     },
     loginType: {
       type: String,
+      enum: AVAILABLE_LOGIN_TYPES,
+      default: LOGIN_TYPES.EMAIL_PASSWORD
     },
   },
   { timestamps: true }

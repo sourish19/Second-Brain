@@ -18,7 +18,13 @@ export enum CONTENT_TYPES {
   OTHER = 'other',
 }
 
+export enum LOGIN_TYPES {
+  GOOGLE = 'google',
+  EMAIL_PASSWORD = 'email_password',
+}
+
 export const AVAILABLE_CONTENT_TYPES: CONTENT_TYPES[] =
   Object.values(CONTENT_TYPES);
+export const AVAILABLE_LOGIN_TYPES: LOGIN_TYPES[] = Object.values(LOGIN_TYPES);
 
 export const NO_IMAGE = 'https://placehold.co/600x400';

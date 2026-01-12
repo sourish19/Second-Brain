@@ -90,7 +90,9 @@ const AuthForm = <TResponse, TVariables>({
 			</CardContent>
 
 			<CardFooter>
-				<Button variant="outline" className="w-full text-xs sm:text-sm">
+				<Button
+				onClick={() => (window.location.href = `${import.meta.env.VITE_DEV_BASE_URL}/users/google`)}
+				variant="outline" className="w-full text-xs sm:text-sm">
 					Login with Google
 				</Button>
 			</CardFooter>

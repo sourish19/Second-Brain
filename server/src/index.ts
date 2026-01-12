@@ -3,6 +3,7 @@ import 'dotenv/config';
 import app from './app';
 import dbConfig from './config/db.config';
 import logger from './config/logger.config';
+import "./config/passport"
 
 import ENV from './config/env.config';
 

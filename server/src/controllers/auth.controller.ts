@@ -3,16 +3,16 @@ import jwt from 'jsonwebtoken';
 
 import logger from '../config/logger.config';
 import User from '../schemas/auth.schema';
-
 import asyncHandler from '../utils/asyncHandler.util';
 import {
   ForbiddenError,
   InternalServerError,
   ConflictError,
   NotFoundError,
+  UnauthorizedError
 } from '../utils/apiError.util';
 import { cookieOptions } from '../utils/constants.util';
-
+import ENV from '../config/env.config';
 import ApiResponse from '../utils/apiResponse.util';
 
 export const registerUser = asyncHandler(async (req, res) => {
@@ -68,12 +68,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ForbiddenError('Inavlid credentials');
   }
 
-  if (!process.env.JWT_SECRET) {
-    logger.error('JWT_SECRET not configured');
-    throw new InternalServerError('Server error');
-  }
-
-  const token = jwt.sign({ id: findUser._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: findUser._id }, ENV.JWT_SECRET, {
     expiresIn: '2d',
   });
 
@@ -120,7 +115,21 @@ export const getUser = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: Need to implement this
-export const handleGoogleAuthLogin = asyncHandler(async (_req, _res) => {
-  return _res;
+export const handleGoogleAuthLogin = asyncHandler(async (req, res) => {
+  if(!req.user) throw new UnauthorizedError()
+
+  const user = await User.findById(req.user._id).select("-password")
+
+  if(!user) throw new InternalServerError()
+
+    const token = jwt.sign({ id: user._id }, ENV.JWT_SECRET, {
+    expiresIn: '2d',
+  });
+
+  logger.info({ userId: user._id, email:user.email }, 'User logged using google');
+
+  return res
+    .status(302)
+    .cookie('token', token, cookieOptions)
+    .redirect("http://localhost:3000")
 });
