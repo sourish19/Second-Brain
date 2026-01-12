@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
@@ -31,6 +32,7 @@ import { AddContentSchema } from '@/validations/contentValidation';
 import { addContent } from '@/api/contents';
 
 const AddContent = () => {
+	const [open,setOpen] = useState(false)
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -40,6 +42,8 @@ const AddContent = () => {
 			if (data instanceof Object) {
 				queryClient.invalidateQueries({ queryKey: ['contents'] });
 				toast.success(data.message);
+				form.reset()
+				setOpen(false)
 			} else {
 				toast.error(data);
 			}
@@ -57,21 +61,21 @@ const AddContent = () => {
 			onSubmit: AddContentSchema,
 		},
 		onSubmit: ({ value }) => {
-			console.log('Form data:', value);
+			// console.log('Form data:', value);
 			mutation.mutate(value);
 		},
 	});
 
 	return (
-		<Sheet>
+		<Sheet open={open} onOpenChange={setOpen} >
 			<SheetTrigger asChild>
 				<Button variant="outline">Add Content</Button>
 			</SheetTrigger>
 			<SheetContent>
 				<SheetHeader>
-					<SheetTitle>Edit profile</SheetTitle>
+					<SheetTitle>Add Content</SheetTitle>
 					<SheetDescription>
-						Make changes to your profile here. Click save when you&apos;re done.
+						<p>Fill the form to add a new content to your SecondBrain</p>
 					</SheetDescription>
 				</SheetHeader>
 
