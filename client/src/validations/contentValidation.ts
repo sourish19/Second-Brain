@@ -30,7 +30,20 @@ export const AddContentSchema = z.object({
 	tags: z.array(z.string()).catch([]),
 });
 
+export const DeleteContentResponseSchema = z.strictObject({
+	success: z.boolean(),
+	status: z.literal(200),
+	message: z.string(),
+	data: z.object({}).optional()
+});
+
+export const DeleteContentSchema = z.object({
+	contentId: z.string({ message: 'Content ID is required' }),
+});
+
 export type ContentItem = z.infer<typeof ContentItemSchema>;
 export type GetContentsResponse = z.infer<typeof GetContentsResponseSchema>;
 export type AddContentResponse = z.infer<typeof AddContentResponseSchema>;
 export type AddContentValues = z.infer<typeof AddContentSchema>;
+export type DeleteContentResponse = z.infer<typeof DeleteContentResponseSchema>;
+export type DeleteContentValues = z.infer<typeof DeleteContentSchema>;

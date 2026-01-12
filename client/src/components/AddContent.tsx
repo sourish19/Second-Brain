@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
-import { useQueryClient } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-
 import {
 	Sheet,
 	SheetClose,
@@ -32,7 +31,7 @@ import { AddContentSchema } from '@/validations/contentValidation';
 import { addContent } from '@/api/contents';
 
 const AddContent = () => {
-	const [open,setOpen] = useState(false)
+	const [open, setOpen] = useState(false);
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -42,8 +41,8 @@ const AddContent = () => {
 			if (data instanceof Object) {
 				queryClient.invalidateQueries({ queryKey: ['contents'] });
 				toast.success(data.message);
-				form.reset()
-				setOpen(false)
+				form.reset();
+				setOpen(false);
 			} else {
 				toast.error(data);
 			}
@@ -67,7 +66,7 @@ const AddContent = () => {
 	});
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen} >
+		<Sheet open={open} onOpenChange={setOpen}>
 			<SheetTrigger asChild>
 				<Button variant="outline">Add Content</Button>
 			</SheetTrigger>
@@ -218,9 +217,7 @@ const AddContent = () => {
 					</FieldSet>
 
 					<SheetFooter>
-						<Button type="submit">
-							{mutation.isPending ? <Spinner /> : 'Save'}
-						</Button>
+						<Button type="submit">{mutation.isPending ? <Spinner /> : 'Save'}</Button>
 						<SheetClose asChild>
 							<Button variant="outline">Close</Button>
 						</SheetClose>
