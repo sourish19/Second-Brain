@@ -18,7 +18,7 @@ type CardContentsProps = {
 const CardContents = ({ data }: CardContentsProps) => {
 	const queryClient = useQueryClient();
 
-	// This is for deletion of content 
+	// This is for deletion of content
 	const mutation = useMutation({
 		mutationFn: async (data: DeleteContentValues) => {
 			const response = await deleteContent(data);
@@ -33,6 +33,20 @@ const CardContents = ({ data }: CardContentsProps) => {
 		},
 	});
 
+	// This is for copying link to clipboard
+	const copyLinkToClipboard = async (link: string) => {
+		try {
+			// This if block is for checking browser compatability
+			if (navigator?.clipboard?.writeText) {
+				await navigator.clipboard.writeText(link);
+				toast.success('Link copied successfully');
+			}
+		} catch (error) {
+			console.error(error);
+			toast.error('Unable to copy link');
+		}
+	};
+
 	return (
 		<div className="flex flex-wrap gap-4">
 			{data.map((item) => (
@@ -45,10 +59,14 @@ const CardContents = ({ data }: CardContentsProps) => {
 							</span>
 						</div>
 						<div className="flex gap-2 text-muted-foreground">
-							<Share2 className="w-4 h-4 cursor-pointer hover:text-primary" />
-							<Trash2 
-							onClick={() => mutation.mutate({contentId: item.id})}
-							className="w-4 h-4 cursor-pointer hover:text-destructive" />
+							<Share2
+								onClick={() => copyLinkToClipboard(item.link)}
+								className="w-4 h-4 cursor-pointer hover:text-primary"
+							/>
+							<Trash2
+								onClick={() => mutation.mutate({ contentId: item.id })}
+								className="w-4 h-4 cursor-pointer hover:text-destructive"
+							/>
 						</div>
 					</CardHeader>
 

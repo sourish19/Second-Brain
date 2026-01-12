@@ -11,6 +11,7 @@ import Logo from './Logo';
 import ModeToggle from './MoodToggle';
 import Shimmer from './Shimmer';
 import SidebarNav from './SidebarNav';
+import ThemeProvider from './ThemeProvider';
 
 export {
 	Header,
@@ -26,4 +27,5 @@ export {
 	Shimmer,
 	ErrorFallback,
 	AddContent,
+	ThemeProvider,
 };

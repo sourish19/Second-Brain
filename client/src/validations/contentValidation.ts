@@ -34,7 +34,7 @@ export const DeleteContentResponseSchema = z.strictObject({
 	success: z.boolean(),
 	status: z.literal(200),
 	message: z.string(),
-	data: z.object({}).optional()
+	data: z.object({}).optional(),
 });
 
 export const DeleteContentSchema = z.object({
