@@ -1,4 +1,4 @@
-import passport from "passport"
+import passport from 'passport';
 import { Router } from 'express';
 
 import {
@@ -39,19 +39,17 @@ router
 router
   .route('/users/login')
   .post(authLimiter, ValidateData(userSchemaValidation), loginUser);
-router
-  .route('/users/getme')
-  .get(authLimiter, isLoggedIn, getUser);
-router.route('/users/logout').post(isLoggedIn,logoutUser);
-// Google SSO Login 
+router.route('/users/getme').get(authLimiter, isLoggedIn, getUser);
+router.route('/users/logout').post(isLoggedIn, logoutUser);
+// Google SSO Login
 router.route('/users/google').get(
-  passport.authenticate("google",{
-    scope: ["profile","email"]
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
   })
 );
 router.route('/users/google/callback').get(
-  passport.authenticate("google",{
-   session: false 
+  passport.authenticate('google', {
+    session: false,
   }),
   handleGoogleAuthLogin
 );

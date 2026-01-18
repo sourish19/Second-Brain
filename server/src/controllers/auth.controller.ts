@@ -9,7 +9,7 @@ import {
   InternalServerError,
   ConflictError,
   NotFoundError,
-  UnauthorizedError
+  UnauthorizedError,
 } from '../utils/apiError.util';
 import { cookieOptions } from '../utils/constants.util';
 import ENV from '../config/env.config';
@@ -93,9 +93,9 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const getUser = asyncHandler(async (req, res) => {
-  const id = req.user?._id
+  const id = req.user?._id;
 
-  if(!id) {
+  if (!id) {
     logger.warn({ userId: id }, 'User details not found');
     throw new NotFoundError('User details not found');
   }
@@ -116,20 +116,23 @@ export const getUser = asyncHandler(async (req, res) => {
 });
 
 export const handleGoogleAuthLogin = asyncHandler(async (req, res) => {
-  if(!req.user) throw new UnauthorizedError()
+  if (!req.user) throw new UnauthorizedError();
 
-  const user = await User.findById(req.user._id).select("-password")
+  const user = await User.findById(req.user._id).select('-password');
 
-  if(!user) throw new InternalServerError()
+  if (!user) throw new InternalServerError();
 
-    const token = jwt.sign({ id: user._id }, ENV.JWT_SECRET, {
+  const token = jwt.sign({ id: user._id }, ENV.JWT_SECRET, {
     expiresIn: '2d',
   });
 
-  logger.info({ userId: user._id, email:user.email }, 'User logged using google');
+  logger.info(
+    { userId: user._id, email: user.email },
+    'User logged using google'
+  );
 
   return res
     .status(302)
     .cookie('token', token, cookieOptions)
-    .redirect("http://localhost:3000")
+    .redirect('http://localhost:3000/dashboard');
 });

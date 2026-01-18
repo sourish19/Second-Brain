@@ -21,7 +21,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
-app.use(passport.initialize())
+app.use(passport.initialize());
 
 app.use(globalLimiter);
 

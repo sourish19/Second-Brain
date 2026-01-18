@@ -19,8 +19,8 @@ passport.use(
     async (_, __, profile, next) => {
       try {
         // check if the user with this email exists in the db
-        console.log("hello");
-        
+        console.log('hello');
+
         const user = await User.findOne({ email: profile._json.email }).select(
           '-password'
         );

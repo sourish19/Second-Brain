@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     loginType: {
       type: String,
       enum: AVAILABLE_LOGIN_TYPES,
-      default: LOGIN_TYPES.EMAIL_PASSWORD
+      default: LOGIN_TYPES.EMAIL_PASSWORD,
     },
   },
   { timestamps: true }

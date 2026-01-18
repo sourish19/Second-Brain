@@ -1,4 +1,4 @@
-import { IUser } from "../schemas/auth.schema";
+import { IUser } from '../schemas/auth.schema';
 
 declare global {
   namespace Express {
