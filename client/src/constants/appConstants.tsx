@@ -73,12 +73,14 @@ export const FeaturesConstants = {
 
 type SidebarNavItem = {
 	title: TSideNavbarTypes;
+	value: TSideNavbarTypesValues;
 	icon: React.ReactElement;
 };
 
 export const SidebarNavbarContents: SidebarNavItem[] = [
 	{
 		title: 'All Contents',
+		value: 'all',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -100,6 +102,7 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 	},
 	{
 		title: 'Tweets',
+		value: 'tweet',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -120,6 +123,7 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 	},
 	{
 		title: 'Videos',
+		value: 'video',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -141,6 +145,7 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 	},
 	{
 		title: 'Documents',
+		value: 'document',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -162,6 +167,7 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 	},
 	{
 		title: 'Links',
+		value: 'link',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -184,6 +190,7 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 	},
 	{
 		title: 'Tags',
+		value: 'tag',
 		icon: (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -208,14 +215,19 @@ export const SidebarNavbarContents: SidebarNavItem[] = [
 ];
 
 export const SideNavbarTypes = [
-	'All Contents',
-	'Tweets',
-	'Videos',
-	'Documents',
-	'Links',
-	'Tags',
+	{ label: 'All Contents', value: 'all' },
+	{ label: 'Tweets', value: 'tweet' },
+	{ label: 'Videos', value: 'video' },
+	{ label: 'Documents', value: 'document' },
+	{ label: 'Links', value: 'link' },
+	{ label: 'Tags', value: 'tag' },
 ] as const;
-export const SideNavbarTypesSchema = z.enum(SideNavbarTypes);
+export const SideNavbarTypesSchema = z.enum(
+	Object.values(SideNavbarTypes).map((type) => type.label),
+);
+export const SideNavbarTypesSchemaValues = z.enum(
+	Object.values(SideNavbarTypes).map((type) => type.value),
+);
 
 const FieldEnum = z.enum(['Name', 'Email', 'Password']);
 const TypeEnum = z.enum(['Sign In', 'Sign Up']);
@@ -237,6 +249,7 @@ export type AuthFormProps<TResponse, TVariables> = AuthFormSchemaType & {
 };
 
 export type TSideNavbarTypes = z.infer<typeof SideNavbarTypesSchema>;
+export type TSideNavbarTypesValues = z.infer<typeof SideNavbarTypesSchemaValues>;
 
 export const AddContentConstents = [
 	{

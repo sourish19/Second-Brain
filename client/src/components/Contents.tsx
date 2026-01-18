@@ -1,10 +1,14 @@
-// import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-// import { userStore } from '@/store/store';
+import { useStore } from 'zustand';
+
 import { getContents } from '@/api/contents';
+
 import { CardContents, ErrorFallback, Shimmer } from '.';
+import { userStore } from '@/store/store';
 
 const Contents = () => {
+	const filteredValue = useStore(userStore, (state) => state.sideNavigationTypeValue);
+	console.log(filteredValue);
 	const { isLoading, isError, data, error } = useQuery({
 		queryKey: ['contents'],
 		queryFn: getContents,
@@ -28,9 +32,11 @@ const Contents = () => {
 	}
 
 	if (data && typeof data === 'object') {
+		console.log(data);
+
 		return (
 			<div className="flex-1 ml-15 md:ml-40 p-4 h-screen">
-				<CardContents data={data.data} />
+				<CardContents data={data.data} filteredValue={filteredValue} />
 			</div>
 		);
 	} else {

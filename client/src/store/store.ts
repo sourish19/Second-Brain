@@ -1,29 +1,18 @@
 import { create } from 'zustand';
-import type { TSideNavbarTypes } from '@/constants/appConstants';
-import type { TAuthenticatedUser } from '@/validations/authValidation';
+
+import type { TSideNavbarTypes, TSideNavbarTypesValues } from '@/constants/appConstants';
 
 interface UserStore {
-	user: TAuthenticatedUser;
 	sideNavigationType: TSideNavbarTypes;
+	sideNavigationTypeValue: TSideNavbarTypesValues;
 }
 
 export const userStore = create<UserStore>()(() => ({
-	user: {
-		name: '',
-		email: '',
-	},
 	sideNavigationType: 'All Contents',
+	sideNavigationTypeValue: 'all',
 }));
 
-export const setUser = (data: TAuthenticatedUser) =>
-	userStore.setState(() => ({
-		user: {
-			name: data.name,
-			email: data.email,
-		},
-	}));
-
-export const resetUser = () => userStore.setState({ user: { name: '', email: '' } });
-
-export const setSideNavigationType = (type: TSideNavbarTypes) =>
-	userStore.setState({ sideNavigationType: type });
+export const setSideNavigationTypeAndValue = (
+	type: TSideNavbarTypes,
+	value: TSideNavbarTypesValues,
+) => userStore.setState({ sideNavigationType: type, sideNavigationTypeValue: value });

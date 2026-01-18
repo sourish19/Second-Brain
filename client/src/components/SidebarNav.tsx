@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+
+import { Button } from './ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { logoutUser } from '@/api/auth';
-import type { TSideNavbarTypes } from '@/constants/appConstants';
+import type { TSideNavbarTypesValues, TSideNavbarTypes } from '@/constants/appConstants';
 import { SidebarNavbarContents } from '@/constants/appConstants';
-import { setSideNavigationType } from '@/store/store';
-import { Button } from './ui/button';
+import { setSideNavigationTypeAndValue } from '@/store/store';
 
 const SidebarNav = () => {
 	const navigate = useNavigate({ from: '/dashboard' });
@@ -27,8 +29,8 @@ const SidebarNav = () => {
 		},
 	});
 
-	const handleClick = (title: TSideNavbarTypes) => {
-		setSideNavigationType(title);
+	const handleClick = (title: TSideNavbarTypes, value: TSideNavbarTypesValues) => {
+		setSideNavigationTypeAndValue(title, value);
 	};
 
 	return (
@@ -39,7 +41,7 @@ const SidebarNav = () => {
 						variant={'ghost'}
 						key={index}
 						className="flex gap-2 cursor-pointer"
-						onClick={() => handleClick(item.title)}
+						onClick={() => handleClick(item.title, item.value)}
 					>
 						<span>{item.icon}</span>
 						<span className="hidden md:block">{item.title}</span>
