@@ -25,7 +25,7 @@ const Header = () => {
 
 	return (
 		<header
-			className={`sticky top-0 z-50 w-full text-neutral-900 dark:text-neutral-100  px-4 md:px-8 font-poppins ${isLoading ? '' : data && 'border-b border-neutral-700'} ${scrolled ? 'backdrop-blur-md  border-b border-neutral-700' : 'bg-transparent'}  `}
+			className={`fixed top-0 z-50 w-full text-neutral-900 dark:text-neutral-100  px-4 md:px-8 font-poppins ${isLoading ? '' : data && 'border-b border-neutral-700'} ${scrolled ? 'backdrop-blur-md  border-b border-neutral-700' : 'bg-transparent'}  `}
 		>
 			<div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
 				{/* Left side */}
@@ -69,12 +69,7 @@ const Header = () => {
 								</Button>
 							)}
 							{data?.success ? (
-								// <Button className="cursor-pointer" size="sm">
-								// <p className="flex justify-center items-center gap-1">
-								// <Plus />
 								<AddContent />
-								// </p>
-								// </Button>
 							) : (
 								<Button className="cursor-pointer" size="sm">
 									<Link to="/signup">

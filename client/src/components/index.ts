@@ -12,6 +12,7 @@ import ModeToggle from './MoodToggle';
 import Shimmer from './Shimmer';
 import SidebarNav from './SidebarNav';
 import ThemeProvider from './ThemeProvider';
+import NoContent from './NoContent';
 
 export {
 	Header,
@@ -28,4 +29,5 @@ export {
 	ErrorFallback,
 	AddContent,
 	ThemeProvider,
+	NoContent,
 };

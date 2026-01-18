@@ -34,7 +34,7 @@ const SidebarNav = () => {
 	};
 
 	return (
-		<aside className="flex flex-col fixed h-full w-15 md:w-40 border-r border-neutral-700 text-neutral-900 dark:text-neutral-100">
+		<aside className="flex flex-col fixed h-full mt-16 w-15 md:w-40 border-r border-neutral-700 text-neutral-900 dark:text-neutral-100">
 			<div className="flex-5 py-5 px-4 md:px-4 flex flex-col  gap-6">
 				{SidebarNavbarContents.map((item, index) => (
 					<Button

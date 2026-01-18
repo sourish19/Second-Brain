@@ -7,17 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 import { deleteContent } from '@/api/contents';
-import type { TSideNavbarTypesValues } from '@/constants/appConstants';
 
 import type { DeleteContentValues } from '@/validations/contentValidation';
 import type { ContentItem } from '@/validations/contentValidation';
 
 type CardContentsProps = {
-	data: ContentItem[];
-	filteredValue: TSideNavbarTypesValues;
+	data: ContentItem
 };
 
-const CardContents = ({ data, filteredValue }: CardContentsProps) => {
+const CardContents = ({ data }: CardContentsProps) => {
 	const queryClient = useQueryClient();
 
 	// This is for deletion of content
@@ -50,45 +48,45 @@ const CardContents = ({ data, filteredValue }: CardContentsProps) => {
 	};
 
 	return (
-		<div className="flex flex-wrap gap-4">
-			{data.map(
-				(item) =>
-					(filteredValue === 'all' || item.type === filteredValue) && (
+		<>
+			{/* {data.map((data) => {
+				if (filteredValue === 'all' || filteredValue === data.type) {
+					return ( */}
 						<Card
-							key={item.id}
+							key={data.id}
 							className="w-[300px] rounded-2xl shadow-sm hover:shadow-md transition"
 						>
-							<CardHeader className="flex justify-between items-start">
-								<div className="flex items-center gap-2">
+							<CardHeader className="flex justify-between datas-start">
+								<div className="flex datas-center gap-2">
 									<FileText className="w-4 h-4 text-muted-foreground" />
 									<span className="text-sm font-medium text-muted-foreground">
-										{item.type.toUpperCase()}
+										{data.type.toUpperCase()}
 									</span>
 								</div>
 								<div className="flex gap-2 text-muted-foreground">
 									<Share2
-										onClick={() => copyLinkToClipboard(item.link)}
+										onClick={() => copyLinkToClipboard(data.link)}
 										className="w-4 h-4 cursor-pointer hover:text-primary"
 									/>
 									<Trash2
-										onClick={() => mutation.mutate({ contentId: item.id })}
+										onClick={() => mutation.mutate({ contentId: data.id })}
 										className="w-4 h-4 cursor-pointer hover:text-destructive"
 									/>
 								</div>
 							</CardHeader>
 
 							<CardContent>
-								<Link to={item.link} target="blank">
+								<Link to={data.link} target="blank">
 									{' '}
-									<CardTitle className="text-lg font-semibold mb-3">{item.title}</CardTitle>
+									<CardTitle className="text-lg font-semibold mb-3">{data.title}</CardTitle>
 								</Link>
 
 								{/* Image container */}
-								<Link to={item.link} target="blank">
+								<Link to={data.link} target="blank">
 									<div className="w-full h-40 bg-muted rounded-md overflow-hidden mb-4">
 										<img
-											src={item.image}
-											alt={item.title}
+											src={data.image}
+											alt={data.title}
 											className="w-full h-full object-cover"
 											loading="lazy"
 										/>
@@ -97,7 +95,7 @@ const CardContents = ({ data, filteredValue }: CardContentsProps) => {
 
 								{/* Tags */}
 								<div className="flex flex-wrap gap-2 mb-2">
-									{item.tags.map((tag) => (
+									{data.tags.map((tag) => (
 										<Badge key={tag} variant="outline">
 											#{tag}
 										</Badge>
@@ -107,9 +105,10 @@ const CardContents = ({ data, filteredValue }: CardContentsProps) => {
 								<p className="text-xs text-muted-foreground">Added on 09/03/2024</p>
 							</CardContent>
 						</Card>
-					),
-			)}
-		</div>
+					{/* );
+				}
+			})} */}
+		</>
 	);
 };
 
